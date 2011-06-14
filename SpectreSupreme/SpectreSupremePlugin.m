@@ -11,9 +11,14 @@
 
 static NSString* SSExampleCompositionName = @"Some Shit";
 
+@interface SpectreSupremePlugIn()
+@property (nonatomic, retain) NSURL* location;
+@end
+
 @implementation SpectreSupremePlugIn
 
 @dynamic inputLocation, outputImage, outputDoneSignal;
+@synthesize location = _location;
 
 + (NSDictionary*)attributes {
     NSMutableDictionary* attributes = [NSDictionary dictionaryWithObjectsAndKeys: 
@@ -65,10 +70,14 @@ static NSString* SSExampleCompositionName = @"Some Shit";
 }
 
 - (void)finalize {
+    [_location release];
+
 	[super finalize];
 }
 
 - (void)dealloc {
+    [_location release];
+
 	[super dealloc];
 }
 
@@ -98,6 +107,35 @@ static NSString* SSExampleCompositionName = @"Some Shit";
 	The OpenGL context for rendering can be accessed and defined for CGL macros using:
 	CGLContextObj cgl_ctx = [context CGLContextObj];
 	*/
+
+    // update outputs when appropriate
+    if (_doneSignalDidChange) {
+        // set saved file path on done and leave it there until the next capture
+        if (_doneSignal) {
+            // TODO - assign image
+        }
+
+        self.outputDoneSignal = _doneSignal;
+        _doneSignalDidChange = _doneSignal;
+        _doneSignal = NO;
+    }
+
+    // process input when location changes
+    if (![self didValueForInputKeyChange:@"inputLocation"])
+        return YES;
+
+    // bail on empty location
+    if ([self.inputLocation isEqualToString:@""])
+        return YES;
+
+    CCDebugLogSelector();
+
+    NSURL* url = [NSURL URLWithString:self.inputLocation];
+//    if (![url isFileURL])
+//        url = [NSURL fileURLWithPath:[self.inputLocation stringByExpandingTildeInPath] isDirectory:NO];
+
+    self.location = url;
+    CCDebugLog(@"will fetch:%@", url);
 
 	return YES;
 }
