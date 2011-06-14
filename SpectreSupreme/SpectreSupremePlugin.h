@@ -8,5 +8,13 @@
 
 #import <Quartz/Quartz.h>
 
-@interface SpectreSupremePlugIn : QCPlugIn {}
+@interface SpectreSupremePlugIn : QCPlugIn {
+@private
+    NSURL* _location;
+    BOOL _doneSignal;
+    BOOL _doneSignalDidChange;
+}
+@property (nonatomic, assign) NSString* inputLocation;
+@property (nonatomic, assign) id<QCPlugInOutputImageProvider> outputImage;
+@property (nonatomic) BOOL outputDoneSignal;
 @end
