@@ -8,8 +8,38 @@
 
 #import "SpectreSupremePlugIn.h"
 #import "SpectreSupreme.h"
+#import <WebKit/WebKit.h>
 
-static NSString* SSExampleCompositionName = @"Some Shit";
+static NSString* SSExampleCompositionName = @"Render SVG";
+
+#pragma mark WEBVIEW
+
+@interface SSWebView : WebView
+@property (nonatomic, readonly) double documentWidth;
+@property (nonatomic, readonly) double documentHeight;
+@end
+
+@implementation SSWebView
+
+- (BOOL)isOpaque {
+    return NO;
+}
+
+- (BOOL)drawsBackground {
+    return NO;
+}
+
+- (double)documentWidth {
+    return [[self stringByEvaluatingJavaScriptFromString:@"document.width"] doubleValue];
+}
+
+- (double)documentHeight {
+    return [[self stringByEvaluatingJavaScriptFromString:@"document.height"] doubleValue];
+}
+
+@end
+
+#pragma mark - PLUGIN
 
 @interface SpectreSupremePlugIn()
 @property (nonatomic, retain) NSURL* location;
@@ -70,12 +100,16 @@ static NSString* SSExampleCompositionName = @"Some Shit";
 }
 
 - (void)finalize {
+    [_window release];
+    [_webView release];
     [_location release];
 
 	[super finalize];
 }
 
 - (void)dealloc {
+    [_window release];
+    [_webView release];
     [_location release];
 
 	[super dealloc];
@@ -89,7 +123,14 @@ static NSString* SSExampleCompositionName = @"Some Shit";
 	Return NO in case of fatal failure (this will prevent rendering of the composition to start).
 	*/
 
-	return YES;
+//    dispatch_async(dispatch_get_main_queue(), ^{
+        _window = [[NSWindow alloc] initWithContentRect:NSMakeRect(-16000., -16000., 1024., 768.) styleMask:NSBorderlessWindowMask backing:NSBackingStoreBuffered defer:NO];
+        _webView = [[SSWebView alloc] initWithFrame:NSMakeRect(0., 0., 1024., 768.) frameName:nil groupName:nil];
+        _webView.frameLoadDelegate = self;
+        [_window setContentView:_webView];
+//    });
+
+    return YES;
 }
 
 - (void)enableExecution:(id <QCPlugInContext>)context {
@@ -110,7 +151,7 @@ static NSString* SSExampleCompositionName = @"Some Shit";
 
     // update outputs when appropriate
     if (_doneSignalDidChange) {
-        // set saved file path on done and leave it there until the next capture
+        // set image on done and leave it there until the next render
         if (_doneSignal) {
             // TODO - assign image
         }
@@ -136,6 +177,9 @@ static NSString* SSExampleCompositionName = @"Some Shit";
 
     self.location = url;
     CCDebugLog(@"will fetch:%@", url);
+//    dispatch_async(dispatch_get_main_queue(), ^{
+        [[_webView mainFrame] loadRequest:[NSURLRequest requestWithURL:url]];
+//    });
 
 	return YES;
 }
@@ -150,6 +194,29 @@ static NSString* SSExampleCompositionName = @"Some Shit";
 	/*
 	Called by Quartz Composer when rendering of the composition stops: perform any required cleanup for the plug-in.
 	*/
+
+    [_window close];
+    [_window release];
+    _window = nil;
+    [_webView release];
+    _webView = nil;
 }
+
+#pragma mark - FRAME LOAD DELEGATE
+
+- (void)webView:(WebView*)sender didFinishLoadForFrame:(WebFrame*)frame {
+    CCDebugLogSelector();
+	CCDebugLog(@"frame %@ %fx%f", frame, _webView.documentWidth, _webView.documentHeight);
+}
+
+- (void)webView:(WebView*)sender didFailProvisionalLoadWithError:(NSError*)error forFrame:(WebFrame*)frame {
+    CCDebugLogSelector();
+}
+
+- (void)webView:(WebView*)sender didFailLoadWithError:(NSError*)error forFrame:(WebFrame*)frame {
+    CCDebugLogSelector();
+}
+
+#pragma mark - PRIVATE
 
 @end
