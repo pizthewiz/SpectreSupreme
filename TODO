@@ -1,4 +1,8 @@
 
 NOW
+[ ] render view as a bitmap
+[ ] figure out how to get relative URLs working key off of ./ or ../?
 
 LATER
+[ ] render signal input
+[ ] GL direct pipeline
