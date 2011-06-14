@@ -1,6 +1,7 @@
 
 NOW
-[ ] render view as a bitmap
+[X] render view as a bitmap
+[ ] figure out why the output seems to lag sometimes
 [ ] figure out how to get relative URLs working key off of ./ or ../?
 
 LATER
