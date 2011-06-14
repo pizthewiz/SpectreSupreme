@@ -9,7 +9,7 @@ BUNDLE_VERSION_STRING_KEY = 'CFBundleShortVersionString'
 HEAD_REVISION_KEY = 'com.chordedconstructions.ProjectHEADRevision'
 
 ARCHIVE_NAME = 'SpectreSupreme'
-ARCHIVE_INCLUDE_FILES = %w(README.markdown TODO CHANGELOG)
+ARCHIVE_INCLUDE_FILES = %w(README.markdown TODO CHANGELOG Render\ SVG.qtz SVG-logo.svg)
 ARCHIVE_EXCLUDE_FILES = %w()
 
 # helpers
