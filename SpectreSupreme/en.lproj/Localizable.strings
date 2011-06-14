@@ -1,0 +1,10 @@
+/* 
+  Localizable.strings
+  SpectreSupreme
+
+  Created by Jean-Pierre Mouilleseaux on 13 Jun 2011.
+  Copyright 2011 Chorded Constructions. All rights reserved.
+*/
+
+"kQCPlugIn_Name" = "Web Renderer";
+"kQCPlugIn_Description" = "SpectreSupreme description";
