@@ -10,9 +10,24 @@
 #import "SpectreSupreme.h"
 #import <WebKit/WebKit.h>
 
-static NSString* SSExampleCompositionName = @"Render SVG";
+#pragma mark WINDOW
 
-#pragma mark WEBVIEW
+@interface SSWindow : NSWindow
+@end
+
+@implementation SSWindow
+
+- (BOOL)isOpaque {
+    return NO;
+}
+
+- (NSColor*)backgroundColor {
+    return [NSColor clearColor];
+}
+
+@end
+
+#pragma mark - WEBVIEW
 
 @interface SSWebView : WebView
 @property (nonatomic, readonly) double documentWidth;
@@ -41,14 +56,24 @@ static NSString* SSExampleCompositionName = @"Render SVG";
 
 #pragma mark - PLUGIN
 
+static NSString* SSExampleCompositionName = @"Render SVG";
+
+static void _BufferReleaseCallback(const void* address, void* context) {
+    CCDebugLog(@"_BufferReleaseCallback");
+    // release bitmap context backing
+    free((void*)address);
+}
+
 @interface SpectreSupremePlugIn()
+@property (nonatomic, retain) id <QCPlugInOutputImageProvider> placeHolderProvider;
 @property (nonatomic, retain) NSURL* location;
+- (void)_captureImageFromWebView;
 @end
 
 @implementation SpectreSupremePlugIn
 
 @dynamic inputLocation, outputImage, outputDoneSignal;
-@synthesize location = _location;
+@synthesize placeHolderProvider = _placeHolderProvider, location = _location;
 
 + (NSDictionary*)attributes {
     NSMutableDictionary* attributes = [NSDictionary dictionaryWithObjectsAndKeys: 
@@ -87,7 +112,7 @@ static NSString* SSExampleCompositionName = @"Render SVG";
 }
 
 + (QCPlugInTimeMode)timeMode {
-	return kQCPlugInTimeModeNone;
+	return kQCPlugInTimeModeIdle;
 }
 
 #pragma mark -
@@ -104,6 +129,9 @@ static NSString* SSExampleCompositionName = @"Render SVG";
     [_webView release];
     [_location release];
 
+    CGImageRelease(_renderedImage);
+    self.placeHolderProvider = nil;
+
 	[super finalize];
 }
 
@@ -111,6 +139,9 @@ static NSString* SSExampleCompositionName = @"Render SVG";
     [_window release];
     [_webView release];
     [_location release];
+
+    CGImageRelease(_renderedImage);
+    self.placeHolderProvider = nil;
 
 	[super dealloc];
 }
@@ -123,12 +154,19 @@ static NSString* SSExampleCompositionName = @"Render SVG";
 	Return NO in case of fatal failure (this will prevent rendering of the composition to start).
 	*/
 
-//    dispatch_async(dispatch_get_main_queue(), ^{
-        _window = [[NSWindow alloc] initWithContentRect:NSMakeRect(-16000., -16000., 1024., 768.) styleMask:NSBorderlessWindowMask backing:NSBackingStoreBuffered defer:NO];
-        _webView = [[SSWebView alloc] initWithFrame:NSMakeRect(0., 0., 1024., 768.) frameName:nil groupName:nil];
+    CCDebugLogSelector();
+
+#define DISPATH_ON_MAIN_THREAD 1
+#if DISPATH_ON_MAIN_THREAD
+    dispatch_async(dispatch_get_main_queue(), ^{
+#endif
+        _window = [[SSWindow alloc] initWithContentRect:NSMakeRect(-16000., -16000., 1680., 1050.) styleMask:NSBorderlessWindowMask backing:NSBackingStoreBuffered defer:NO];
+        _webView = [[SSWebView alloc] initWithFrame:NSMakeRect(0., 0., 1680., 1050.) frameName:nil groupName:nil];
         _webView.frameLoadDelegate = self;
         [_window setContentView:_webView];
-//    });
+#if DISPATH_ON_MAIN_THREAD
+    });
+#endif
 
     return YES;
 }
@@ -151,9 +189,43 @@ static NSString* SSExampleCompositionName = @"Render SVG";
 
     // update outputs when appropriate
     if (_doneSignalDidChange) {
-        // set image on done and leave it there until the next render
+        // set image on done
         if (_doneSignal) {
-            // TODO - assign image
+            CCDebugLog(@"creating output image");
+
+            // TODO - move this somewhere convenient
+            size_t bytesPerRow = CGImageGetWidth(_renderedImage) * 4;
+            if (bytesPerRow % 16)
+                bytesPerRow = ((bytesPerRow / 16) + 1) * 16;
+
+            double totalBytes = CGImageGetHeight(_renderedImage) * bytesPerRow;
+            void* baseAddress = valloc(totalBytes);
+            if (baseAddress == NULL) {
+                CCErrorLog(@"ERROR - failed to valloc %f bytes for bitmap data to write into", totalBytes);
+                CGImageRelease(_renderedImage);
+                _renderedImage = NULL;
+                return NO;
+            }
+
+            CGContextRef bitmapContext = CGBitmapContextCreate(baseAddress, CGImageGetWidth(_renderedImage), CGImageGetHeight(_renderedImage), 8, bytesPerRow, [context colorSpace], kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrder32Host);
+            if (bitmapContext == NULL) {
+                CCErrorLog(@"ERROR - failed to create bitmap context");
+                free(baseAddress);
+                CGImageRelease(_renderedImage);
+                _renderedImage = NULL;
+                return NO;
+            }
+            CGRect bounds = CGRectMake(0., 0., CGImageGetWidth(_renderedImage), CGImageGetHeight(_renderedImage));
+            CGContextClearRect(bitmapContext, bounds);
+            CGContextDrawImage(bitmapContext, bounds, _renderedImage);
+
+            self.placeHolderProvider = [context outputImageProviderFromBufferWithPixelFormat:QCPlugInPixelFormatBGRA8 pixelsWide:CGImageGetWidth(_renderedImage) pixelsHigh:CGImageGetHeight(_renderedImage) baseAddress:baseAddress bytesPerRow:bytesPerRow releaseCallback:_BufferReleaseCallback releaseContext:NULL colorSpace:[context colorSpace] shouldColorMatch:YES];
+            self.outputImage = self.placeHolderProvider;
+
+            // cleanup
+            CGImageRelease(_renderedImage);
+            _renderedImage = NULL;
+            CGContextRelease(bitmapContext);
         }
 
         self.outputDoneSignal = _doneSignal;
@@ -177,9 +249,13 @@ static NSString* SSExampleCompositionName = @"Render SVG";
 
     self.location = url;
     CCDebugLog(@"will fetch:%@", url);
-//    dispatch_async(dispatch_get_main_queue(), ^{
+#if DISPATH_ON_MAIN_THREAD
+    dispatch_async(dispatch_get_main_queue(), ^{
+#endif
         [[_webView mainFrame] loadRequest:[NSURLRequest requestWithURL:url]];
-//    });
+#if DISPATH_ON_MAIN_THREAD
+    });
+#endif
 
 	return YES;
 }
@@ -188,6 +264,8 @@ static NSString* SSExampleCompositionName = @"Render SVG";
 	/*
 	Called by Quartz Composer when the plug-in instance stops being used by Quartz Composer.
 	*/
+
+    CCDebugLogSelector();
 }
 
 - (void)stopExecution:(id <QCPlugInContext>)context {
@@ -195,7 +273,12 @@ static NSString* SSExampleCompositionName = @"Render SVG";
 	Called by Quartz Composer when rendering of the composition stops: perform any required cleanup for the plug-in.
 	*/
 
-    [_window close];
+    CCDebugLogSelector();
+
+    CGImageRelease(_renderedImage);
+    _renderedImage = NULL;
+    self.placeHolderProvider = nil;
+
     [_window release];
     _window = nil;
     [_webView release];
@@ -206,17 +289,48 @@ static NSString* SSExampleCompositionName = @"Render SVG";
 
 - (void)webView:(WebView*)sender didFinishLoadForFrame:(WebFrame*)frame {
     CCDebugLogSelector();
-	CCDebugLog(@"frame %@ %fx%f", frame, _webView.documentWidth, _webView.documentHeight);
+
+    if (frame != [_webView mainFrame])
+        return;
+
+	CCDebugLog(@"main frame: (%fx%f)", _webView.documentWidth, _webView.documentHeight);
+
+    [self _captureImageFromWebView];
 }
 
 - (void)webView:(WebView*)sender didFailProvisionalLoadWithError:(NSError*)error forFrame:(WebFrame*)frame {
     CCDebugLogSelector();
+    CCDebugLog(@"ERROR - failed provisional load with %@", error);
 }
 
 - (void)webView:(WebView*)sender didFailLoadWithError:(NSError*)error forFrame:(WebFrame*)frame {
     CCDebugLogSelector();
+    CCDebugLog(@"ERROR - failed load with %@", error);
 }
 
 #pragma mark - PRIVATE
 
+- (void)_captureImageFromWebView {
+    CCDebugLogSelector();
+
+#if DISPATH_ON_MAIN_THREAD
+    dispatch_async(dispatch_get_main_queue(), ^{
+#endif
+        [_webView lockFocus];
+        NSBitmapImageRep* bitmap = [[NSBitmapImageRep alloc] initWithFocusedViewRect:[_webView visibleRect]];
+        [_webView unlockFocus];
+
+        CGImageRelease(_renderedImage);
+        _renderedImage = CGImageRetain([bitmap CGImage]);
+        [bitmap release];
+
+        _doneSignal = YES;
+        _doneSignalDidChange = YES;
+#if DISPATH_ON_MAIN_THREAD
+    });
+#endif
+
+}
+
 @end
+

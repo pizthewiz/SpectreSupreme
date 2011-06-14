@@ -8,12 +8,15 @@
 
 #import <Quartz/Quartz.h>
 
-@class SSWebView;
+@class SSWindow, SSWebView;
 
 @interface SpectreSupremePlugIn : QCPlugIn {
 @private
-    NSWindow* _window;
+    SSWindow* _window;
     SSWebView* _webView;
+    CGImageRef _renderedImage;
+    id<QCPlugInOutputImageProvider> _placeHolderProvider;
+
     NSURL* _location;
     BOOL _doneSignal;
     BOOL _doneSignalDidChange;
