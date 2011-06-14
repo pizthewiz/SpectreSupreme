@@ -23,6 +23,11 @@
 		D815A70C13A70F270063686A /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		D815A70E13A70F270063686A /* SpectreSupremePlugin.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SpectreSupremePlugin.h; sourceTree = "<group>"; };
 		D815A70F13A70F270063686A /* SpectreSupremePlugin.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SpectreSupremePlugin.m; sourceTree = "<group>"; };
+		D815A71813A713440063686A /* Rakefile */ = {isa = PBXFileReference; lastKnownFileType = text; path = Rakefile; sourceTree = SOURCE_ROOT; };
+		D815A71913A713710063686A /* CHANGELOG */ = {isa = PBXFileReference; lastKnownFileType = text; path = CHANGELOG; sourceTree = SOURCE_ROOT; };
+		D815A71A13A713710063686A /* README.markdown */ = {isa = PBXFileReference; lastKnownFileType = text; path = README.markdown; sourceTree = SOURCE_ROOT; };
+		D815A71B13A713720063686A /* TODO */ = {isa = PBXFileReference; lastKnownFileType = text; path = TODO; sourceTree = SOURCE_ROOT; };
+		D815A72113A715090063686A /* SpectreSupreme-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SpectreSupreme-Prefix.pch"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -80,6 +85,10 @@
 				D815A70E13A70F270063686A /* SpectreSupremePlugin.h */,
 				D815A70F13A70F270063686A /* SpectreSupremePlugin.m */,
 				D815A70913A70F270063686A /* Supporting Files */,
+				D815A71A13A713710063686A /* README.markdown */,
+				D815A71813A713440063686A /* Rakefile */,
+				D815A71B13A713720063686A /* TODO */,
+				D815A71913A713710063686A /* CHANGELOG */,
 			);
 			path = SpectreSupreme;
 			sourceTree = "<group>";
@@ -89,6 +98,7 @@
 			children = (
 				D815A70A13A70F270063686A /* SpectreSupreme-Info.plist */,
 				D815A70B13A70F270063686A /* InfoPlist.strings */,
+				D815A72113A715090063686A /* SpectreSupreme-Prefix.pch */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -298,6 +308,7 @@
 				D815A71513A70F270063686A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

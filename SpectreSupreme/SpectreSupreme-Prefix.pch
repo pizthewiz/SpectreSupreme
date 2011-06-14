@@ -1,0 +1,7 @@
+//
+// Prefix header for all source files of the 'SpectreSupreme' target in the 'SpectreSupreme' project
+//
+
+#ifdef __OBJC__
+    #import <Quartz/Quartz.h>
+#endif

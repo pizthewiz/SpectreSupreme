@@ -8,9 +8,9 @@ BUNDLE_VERSION_NUMBER_KEY = 'CFBundleVersion'
 BUNDLE_VERSION_STRING_KEY = 'CFBundleShortVersionString'
 HEAD_REVISION_KEY = 'com.chordedconstructions.ProjectHEADRevision'
 
-ARCHIVE_NAME = 'DoubleDouble'
-ARCHIVE_INCLUDE_FILES = %w(README.markdown TODO CHANGELOG Photoshop\ Processor.qtz)
-ARCHIVE_EXCLUDE_FILES = %w(DoubleDoubleHelper)
+ARCHIVE_NAME = 'SpectreSupreme'
+ARCHIVE_INCLUDE_FILES = %w(README.markdown TODO CHANGELOG)
+ARCHIVE_EXCLUDE_FILES = %w()
 
 # helpers
 def build_number
