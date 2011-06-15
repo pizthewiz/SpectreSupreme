@@ -7,4 +7,4 @@
 */
 
 "kQCPlugIn_Name" = "Web Renderer";
-"kQCPlugIn_Description" = "SpectreSupreme description";
+"kQCPlugIn_Description" = "This patch generates an image from the content at given URL.\n\nThe Location input must be a fully qualified URL including protocol, relative links are not yet supported. Rasterization is performed as a one-shot operation for each change to the Location input.";
