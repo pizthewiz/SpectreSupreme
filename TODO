@@ -2,8 +2,9 @@
 NOW
 [X] render view as a bitmap
 [X] figure out why the output seems to lag sometimes
-[ ] support relative file URLs by looking for a string starting with './' or '../'?
+[X] support relative file URLs by looking for a string starting with './' or '../'?
 
 LATER
 [ ] render signal input
+[ ] spin off rendering to a separate process
 [ ] GL direct pipeline?

@@ -190,7 +190,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
                 return NO;
             }
 
-            CCDebugLog(@"update output to %fx%f image", (double)renderedImageWidth, (double)renderedImageHeight);
+//            CCDebugLog(@"update output image to %fx%f", (double)renderedImageWidth, (double)renderedImageHeight);
 
             CGContextRef bitmapContext = CGBitmapContextCreate(baseAddress, renderedImageWidth, renderedImageHeight, 8, bytesPerRow, [context colorSpace], kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrder32Host);
             if (bitmapContext == NULL) {
@@ -227,8 +227,13 @@ static void _BufferReleaseCallback(const void* address, void* context) {
     CCDebugLogSelector();
 
     NSURL* url = [NSURL URLWithString:self.inputLocation];
-//    if (![url isFileURL])
-//        url = [NSURL fileURLWithPath:[self.inputLocation stringByExpandingTildeInPath] isDirectory:NO];
+    // scheme-less would suggest a relative file url
+    if (![url scheme]) {
+        NSURL* baseDirectoryURL = [[context compositionURL] URLByDeletingLastPathComponent];
+//        NSString* cleanFilePath = [[[baseDirectoryURL path] stringByAppendingPathComponent:self.inputLocation] stringByStandardizingPath];
+//        CCDebugLog(@"cleaned file path: %@", cleanFilePath);
+        url = [baseDirectoryURL URLByAppendingPathComponent:self.inputLocation];
+    }
 
     self.location = url;
     CCDebugLog(@"will fetch: %@", url);
