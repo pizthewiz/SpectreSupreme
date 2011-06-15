@@ -46,7 +46,10 @@
       shouldUseLaunchSchemeArgsEnv = "YES"
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
-      buildConfiguration = "Release">
+      buildConfiguration = "Debug">
+      <PathRunnable
+         FilePath = "/Developer/Applications/Quartz Composer.app">
+      </PathRunnable>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">
