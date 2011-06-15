@@ -30,8 +30,8 @@
 #pragma mark - WEBVIEW
 
 @interface SSWebView : WebView
-@property (nonatomic, readonly) double documentWidth;
-@property (nonatomic, readonly) double documentHeight;
+//@property (nonatomic, readonly) double documentWidth;
+//@property (nonatomic, readonly) double documentHeight;
 @end
 
 @implementation SSWebView
@@ -44,13 +44,13 @@
     return NO;
 }
 
-- (double)documentWidth {
-    return [[self stringByEvaluatingJavaScriptFromString:@"document.width"] doubleValue];
-}
-
-- (double)documentHeight {
-    return [[self stringByEvaluatingJavaScriptFromString:@"document.height"] doubleValue];
-}
+//- (double)documentWidth {
+//    return [[self stringByEvaluatingJavaScriptFromString:@"document.width"] doubleValue];
+//}
+//
+//- (double)documentHeight {
+//    return [[self stringByEvaluatingJavaScriptFromString:@"document.height"] doubleValue];
+//}
 
 @end
 
@@ -67,6 +67,8 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 @interface SpectreSupremePlugIn()
 @property (nonatomic, retain) id <QCPlugInOutputImageProvider> placeHolderProvider;
 @property (nonatomic, retain) NSURL* location;
+- (void)_setupWindow;
+- (void)_teardownWindow;
 - (void)_captureImageFromWebView;
 @end
 
@@ -117,31 +119,22 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 
 #pragma mark -
 
-- (id)init {
-	self = [super init];
-	if (self) {
-	}
-	return self;
-}
-
 - (void)finalize {
-    [_window release];
-    [_webView release];
-    [_location release];
-
+    [self _teardownWindow];
     CGImageRelease(_renderedImage);
     self.placeHolderProvider = nil;
+    
+    [_location release];
 
 	[super finalize];
 }
 
 - (void)dealloc {
-    [_window release];
-    [_webView release];
-    [_location release];
-
+    [self _teardownWindow];
     CGImageRelease(_renderedImage);
     self.placeHolderProvider = nil;
+
+    [_location release];
 
 	[super dealloc];
 }
@@ -156,17 +149,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 
     CCDebugLogSelector();
 
-#define DISPATH_ON_MAIN_THREAD 1
-#if DISPATH_ON_MAIN_THREAD
-    dispatch_async(dispatch_get_main_queue(), ^{
-#endif
-        _window = [[SSWindow alloc] initWithContentRect:NSMakeRect(-16000., -16000., 1680., 1050.) styleMask:NSBorderlessWindowMask backing:NSBackingStoreBuffered defer:NO];
-        _webView = [[SSWebView alloc] initWithFrame:NSMakeRect(0., 0., 1680., 1050.) frameName:nil groupName:nil];
-        _webView.frameLoadDelegate = self;
-        [_window setContentView:_webView];
-#if DISPATH_ON_MAIN_THREAD
-    });
-#endif
+    [self _setupWindow];
 
     return YES;
 }
@@ -191,14 +174,14 @@ static void _BufferReleaseCallback(const void* address, void* context) {
     if (_doneSignalDidChange) {
         // set image on done
         if (_doneSignal) {
-            CCDebugLog(@"creating output image");
-
             // TODO - move this somewhere convenient
-            size_t bytesPerRow = CGImageGetWidth(_renderedImage) * 4;
+            size_t renderedImageWidth = CGImageGetWidth(_renderedImage);
+            size_t bytesPerRow = renderedImageWidth * 4;
             if (bytesPerRow % 16)
                 bytesPerRow = ((bytesPerRow / 16) + 1) * 16;
 
-            double totalBytes = CGImageGetHeight(_renderedImage) * bytesPerRow;
+            size_t renderedImageHeight = CGImageGetHeight(_renderedImage);
+            double totalBytes = renderedImageHeight * bytesPerRow;
             void* baseAddress = valloc(totalBytes);
             if (baseAddress == NULL) {
                 CCErrorLog(@"ERROR - failed to valloc %f bytes for bitmap data to write into", totalBytes);
@@ -207,7 +190,9 @@ static void _BufferReleaseCallback(const void* address, void* context) {
                 return NO;
             }
 
-            CGContextRef bitmapContext = CGBitmapContextCreate(baseAddress, CGImageGetWidth(_renderedImage), CGImageGetHeight(_renderedImage), 8, bytesPerRow, [context colorSpace], kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrder32Host);
+            CCDebugLog(@"update output to %fx%f image", (double)renderedImageWidth, (double)renderedImageHeight);
+
+            CGContextRef bitmapContext = CGBitmapContextCreate(baseAddress, renderedImageWidth, renderedImageHeight, 8, bytesPerRow, [context colorSpace], kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrder32Host);
             if (bitmapContext == NULL) {
                 CCErrorLog(@"ERROR - failed to create bitmap context");
                 free(baseAddress);
@@ -215,17 +200,15 @@ static void _BufferReleaseCallback(const void* address, void* context) {
                 _renderedImage = NULL;
                 return NO;
             }
-            CGRect bounds = CGRectMake(0., 0., CGImageGetWidth(_renderedImage), CGImageGetHeight(_renderedImage));
+            CGRect bounds = CGRectMake(0., 0., renderedImageWidth, renderedImageHeight);
             CGContextClearRect(bitmapContext, bounds);
             CGContextDrawImage(bitmapContext, bounds, _renderedImage);
-
-            self.placeHolderProvider = [context outputImageProviderFromBufferWithPixelFormat:QCPlugInPixelFormatBGRA8 pixelsWide:CGImageGetWidth(_renderedImage) pixelsHigh:CGImageGetHeight(_renderedImage) baseAddress:baseAddress bytesPerRow:bytesPerRow releaseCallback:_BufferReleaseCallback releaseContext:NULL colorSpace:[context colorSpace] shouldColorMatch:YES];
-            self.outputImage = self.placeHolderProvider;
-
-            // cleanup
+            CGContextRelease(bitmapContext);
             CGImageRelease(_renderedImage);
             _renderedImage = NULL;
-            CGContextRelease(bitmapContext);
+
+            self.placeHolderProvider = [context outputImageProviderFromBufferWithPixelFormat:QCPlugInPixelFormatBGRA8 pixelsWide:renderedImageWidth pixelsHigh:renderedImageHeight baseAddress:baseAddress bytesPerRow:bytesPerRow releaseCallback:_BufferReleaseCallback releaseContext:NULL colorSpace:[context colorSpace] shouldColorMatch:YES];
+            self.outputImage = self.placeHolderProvider;
         }
 
         self.outputDoneSignal = _doneSignal;
@@ -248,11 +231,18 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 //        url = [NSURL fileURLWithPath:[self.inputLocation stringByExpandingTildeInPath] isDirectory:NO];
 
     self.location = url;
-    CCDebugLog(@"will fetch:%@", url);
+    CCDebugLog(@"will fetch: %@", url);
+#define DISPATH_ON_MAIN_THREAD 1
 #if DISPATH_ON_MAIN_THREAD
     dispatch_async(dispatch_get_main_queue(), ^{
 #endif
+#define WINDOW_WIDTH_DEFAULT 1680
+#define WINDOW_HEIGHT_DEFAULT 1050
+        [_window setContentSize:NSMakeSize(WINDOW_WIDTH_DEFAULT, WINDOW_HEIGHT_DEFAULT)];
         [[_webView mainFrame] loadRequest:[NSURLRequest requestWithURL:url]];
+        if (![[_webView mainFrame] provisionalDataSource]) {
+            CCErrorLog(@"ERROR - web view missing data source, perhaps a bad url %@", url);
+        }
 #if DISPATH_ON_MAIN_THREAD
     });
 #endif
@@ -278,11 +268,6 @@ static void _BufferReleaseCallback(const void* address, void* context) {
     CGImageRelease(_renderedImage);
     _renderedImage = NULL;
     self.placeHolderProvider = nil;
-
-    [_window release];
-    _window = nil;
-    [_webView release];
-    _webView = nil;
 }
 
 #pragma mark - FRAME LOAD DELEGATE
@@ -290,10 +275,10 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 - (void)webView:(WebView*)sender didFinishLoadForFrame:(WebFrame*)frame {
     CCDebugLogSelector();
 
-    if (frame != [_webView mainFrame])
+    if (frame != [sender mainFrame])
         return;
-
-	CCDebugLog(@"main frame: (%fx%f)", _webView.documentWidth, _webView.documentHeight);
+    NSView* documentView = [[[sender mainFrame] frameView ] documentView];
+	CCDebugLog(@"main frame: (%fx%f)", NSWidth(documentView.bounds), NSHeight(documentView.bounds));
 
     [self _captureImageFromWebView];
 }
@@ -310,27 +295,64 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 
 #pragma mark - PRIVATE
 
+- (void)_setupWindow {
+#if DISPATH_ON_MAIN_THREAD
+    dispatch_async(dispatch_get_main_queue(), ^{
+#endif
+        _window = [[SSWindow alloc] initWithContentRect:NSMakeRect(-16000., -16000., WINDOW_WIDTH_DEFAULT, WINDOW_HEIGHT_DEFAULT) styleMask:NSBorderlessWindowMask backing:NSBackingStoreBuffered defer:NO];
+        _webView = [[SSWebView alloc] initWithFrame:NSMakeRect(0., 0., 1680., 1050.) frameName:nil groupName:nil];
+        _webView.frameLoadDelegate = self;
+        [_window setContentView:_webView];
+#if DISPATH_ON_MAIN_THREAD
+    });
+#endif
+}
+
+- (void)_teardownWindow {
+#if DISPATH_ON_MAIN_THREAD
+    dispatch_async(dispatch_get_main_queue(), ^{
+#endif
+        [_window close];
+        [_window release];
+        _window = nil;
+        [_webView release];
+        _webView = nil;
+#if DISPATH_ON_MAIN_THREAD
+    });
+#endif
+}
+
 - (void)_captureImageFromWebView {
     CCDebugLogSelector();
 
 #if DISPATH_ON_MAIN_THREAD
     dispatch_async(dispatch_get_main_queue(), ^{
 #endif
-        [_webView lockFocus];
-        NSBitmapImageRep* bitmap = [[NSBitmapImageRep alloc] initWithFocusedViewRect:[_webView visibleRect]];
-        [_webView unlockFocus];
+        @synchronized(_webView) {
+            // size to fit
+            NSView* documentView = [[[_webView mainFrame] frameView] documentView];
+            CCDebugLog(@"documentView: %fx%f", NSWidth(documentView.bounds), NSHeight(documentView.bounds));
+            [_window setContentSize:[documentView bounds].size];
+            // NB - for some reason without this explicit -display call, svg content fails to render!
+            [_window display];
 
-        CGImageRelease(_renderedImage);
-        _renderedImage = CGImageRetain([bitmap CGImage]);
-        [bitmap release];
+            [_webView lockFocus];
+            NSBitmapImageRep* bitmap = [[NSBitmapImageRep alloc] initWithFocusedViewRect:[_webView visibleRect]];
+            [_webView mainFrame];
 
-        _doneSignal = YES;
-        _doneSignalDidChange = YES;
+//            NSString* path = [NSString stringWithFormat:@"/tmp/SS-%f.png", [[NSDate date] timeIntervalSince1970]];
+//            [[bitmap representationUsingType:NSPNGFileType properties:nil] writeToFile:path atomically:YES];
+
+            CGImageRelease(_renderedImage);
+            _renderedImage = CGImageRetain([bitmap CGImage]);
+            [bitmap release];
+
+            _doneSignal = YES;
+            _doneSignalDidChange = YES;
+        }
 #if DISPATH_ON_MAIN_THREAD
     });
 #endif
-
 }
 
 @end
-
