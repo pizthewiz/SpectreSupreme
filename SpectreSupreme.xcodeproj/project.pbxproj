@@ -34,6 +34,8 @@
 		D815A72913A7169E0063686A /* SpectreSupreme.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpectreSupreme.h; sourceTree = "<group>"; };
 		D815A73813A7470E0063686A /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		D88C967013A7E92000C88D56 /* Render SVG.qtz */ = {isa = PBXFileReference; lastKnownFileType = "video.quartz-composer"; path = "Render SVG.qtz"; sourceTree = SOURCE_ROOT; };
+		D8A94BBF13A95C670035EB75 /* SVG-logo.svg */ = {isa = PBXFileReference; lastKnownFileType = text; path = "SVG-logo.svg"; sourceTree = SOURCE_ROOT; };
+		D8A94BC013A95C670035EB75 /* Trajans-Column-lower-animated.svg */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Trajans-Column-lower-animated.svg"; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,6 +101,8 @@
 				D815A71B13A713720063686A /* TODO */,
 				D815A71913A713710063686A /* CHANGELOG */,
 				D88C967013A7E92000C88D56 /* Render SVG.qtz */,
+				D8A94BBF13A95C670035EB75 /* SVG-logo.svg */,
+				D8A94BC013A95C670035EB75 /* Trajans-Column-lower-animated.svg */,
 			);
 			path = SpectreSupreme;
 			sourceTree = "<group>";
