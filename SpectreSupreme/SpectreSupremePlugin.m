@@ -259,8 +259,6 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 	/*
 	Called by Quartz Composer when the plug-in instance stops being used by Quartz Composer.
 	*/
-
-    CCDebugLogSelector();
 }
 
 - (void)stopExecution:(id <QCPlugInContext>)context {
