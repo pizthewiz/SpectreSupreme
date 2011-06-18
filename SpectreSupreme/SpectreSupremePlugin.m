@@ -239,15 +239,16 @@ static void _BufferReleaseCallback(const void* address, void* context) {
         _doneSignal = NO;
     }
 
-    BOOL shouldLoadURL = [self didValueForInputKeyChange:@"inputLocation"] && ![self.inputLocation isEqualToString:@""];
     BOOL shouldResize = [self didValueForInputKeyChange:@"inputDestinationWidth"] || [self didValueForInputKeyChange:@"inputDestinationHeight"];
-    BOOL shouldRender = [self didValueForInputKeyChange:@"inputRenderSignal"] && self.inputRenderSignal;
+    BOOL shouldLoadURL = [self didValueForInputKeyChange:@"inputLocation"] && ![self.inputLocation isEqualToString:@""];
+    BOOL shouldRender = shouldResize || ([self didValueForInputKeyChange:@"inputRenderSignal"] && self.inputRenderSignal);
 
     // resize when appropriate
     if (shouldResize) {
         _destinationWidth = self.inputDestinationWidth;
         _destinationHeight = self.inputDestinationHeight;
-        CCDebugLog(@"will resize content to %lux%lu", (unsigned long)_destinationWidth, (unsigned long)_destinationHeight);
+        CCDebugLog(@"resize content to %lux%lu", (unsigned long)_destinationWidth, (unsigned long)_destinationHeight);
+        [_window setContentSize:NSMakeSize(_destinationWidth, _destinationHeight)];
     }
     // bail when new render is not necessary
     if (!shouldLoadURL && !shouldRender) {
