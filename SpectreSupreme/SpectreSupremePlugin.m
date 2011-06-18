@@ -348,7 +348,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 #if DISPATH_ON_MAIN_THREAD
     dispatch_async(dispatch_get_main_queue(), ^{
 #endif
-        [_window close];
+//        [_window close];
         [_window release];
         _window = nil;
         [_webView release];
