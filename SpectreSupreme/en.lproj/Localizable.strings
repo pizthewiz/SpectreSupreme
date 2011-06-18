@@ -7,4 +7,4 @@
 */
 
 "kQCPlugIn_Name" = "Web Renderer";
-"kQCPlugIn_Description" = "This patch generates an image from the content at given URL.\n\nThe Location input must be a fully qualified URL with scheme, or a file path relative to the composition. Rasterization is performed as a one-shot operation for each change to the Location input. The default background color is clear, so for pages without an explicit background, they are rasterized onto alpha.";
+"kQCPlugIn_Description" = "This patch generates an image from the content at given URL.\n\nThe Location input must be a fully qualified URL with scheme, or a file path relative to the composition. The Width and Height inputs are helpful when rendering relative-sized content and are measured in pixels; fixed-size content will still be sized to fit the content. The default background color is clear, so for pages without an explicit background, they are rasterized onto alpha.";
