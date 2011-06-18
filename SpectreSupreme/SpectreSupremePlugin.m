@@ -119,6 +119,17 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 
 #pragma mark -
 
+- (id)init {
+    self = [super init];
+    if (self) {
+#define DESTINATION_WIDTH_DEFAULT 1680
+#define DESTINATION_HEIGHT_DEFAULT 1050
+        _destinationWidth = DESTINATION_WIDTH_DEFAULT;
+        _destinationHeight = DESTINATION_HEIGHT_DEFAULT;
+    }
+    return self;
+}
+
 - (void)finalize {
     [self _teardownWindow];
     CGImageRelease(_renderedImage);
@@ -241,9 +252,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 #if DISPATH_ON_MAIN_THREAD
     dispatch_async(dispatch_get_main_queue(), ^{
 #endif
-#define WINDOW_WIDTH_DEFAULT 1680
-#define WINDOW_HEIGHT_DEFAULT 1050
-        [_window setContentSize:NSMakeSize(WINDOW_WIDTH_DEFAULT, WINDOW_HEIGHT_DEFAULT)];
+//        [_window setContentSize:NSMakeSize(_destinationWidth, _destinationHeight)];
         [[_webView mainFrame] loadRequest:[NSURLRequest requestWithURL:url]];
         if (![[_webView mainFrame] provisionalDataSource]) {
             CCErrorLog(@"ERROR - web view missing data source, perhaps a bad url %@", url);
@@ -302,8 +311,8 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 #if DISPATH_ON_MAIN_THREAD
     dispatch_async(dispatch_get_main_queue(), ^{
 #endif
-        _window = [[SSWindow alloc] initWithContentRect:NSMakeRect(-16000., -16000., WINDOW_WIDTH_DEFAULT, WINDOW_HEIGHT_DEFAULT) styleMask:NSBorderlessWindowMask backing:NSBackingStoreBuffered defer:NO];
-        _webView = [[SSWebView alloc] initWithFrame:NSMakeRect(0., 0., 1680., 1050.) frameName:nil groupName:nil];
+        _window = [[SSWindow alloc] initWithContentRect:NSMakeRect(-16000., -16000., _destinationWidth, _destinationHeight) styleMask:NSBorderlessWindowMask backing:NSBackingStoreBuffered defer:NO];
+        _webView = [[SSWebView alloc] initWithFrame:NSMakeRect(0., 0., _destinationWidth, _destinationHeight) frameName:nil groupName:nil];
         _webView.frameLoadDelegate = self;
         [_window setContentView:_webView];
 #if DISPATH_ON_MAIN_THREAD
@@ -334,11 +343,17 @@ static void _BufferReleaseCallback(const void* address, void* context) {
         @synchronized(_webView) {
             // size to fit
             NSView* documentView = [[[_webView mainFrame] frameView] documentView];
-            CCDebugLog(@"documentView: %fx%f", NSWidth(documentView.bounds), NSHeight(documentView.bounds));
-            [_window setContentSize:[documentView bounds].size];
+            NSSize documentSize = [documentView bounds].size;
+            BOOL shouldResize = !NSEqualSizes([(NSView*)[_window contentView] bounds].size, documentSize);
+            if (shouldResize)
+                [_window setContentSize:[documentView bounds].size];
 
             NSBitmapImageRep* bitmap = [_webView bitmapImageRepForCachingDisplayInRect:[_webView visibleRect]];
             [_webView cacheDisplayInRect:[_webView visibleRect] toBitmapImageRep:bitmap];
+
+            // return content size
+            if (shouldResize)
+                [_window setContentSize:NSMakeSize(_destinationWidth, _destinationHeight)];
 
 //            NSString* path = [NSString stringWithFormat:@"/tmp/SS-%f.png", [[NSDate date] timeIntervalSince1970]];
 //            [[bitmap representationUsingType:NSPNGFileType properties:nil] writeToFile:path atomically:YES];

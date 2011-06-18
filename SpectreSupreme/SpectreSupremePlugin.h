@@ -18,6 +18,8 @@
     id<QCPlugInOutputImageProvider> _placeHolderProvider;
 
     NSURL* _location;
+    CGFloat _destinationWidth;
+    CGFloat _destinationHeight;
     BOOL _doneSignal;
     BOOL _doneSignalDidChange;
 }
