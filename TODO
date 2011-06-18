@@ -3,7 +3,7 @@ NOW
 [X] render view as a bitmap
 [X] figure out why the output seems to lag sometimes
 [X] support relative file URLs by looking for a string starting with './' or '../'?
-[ ] destination width and height
+[X] destination width and height
 [ ] render signal input
 
 LATER
