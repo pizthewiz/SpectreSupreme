@@ -26,6 +26,7 @@
 @property (nonatomic, assign) NSString* inputLocation;
 @property (nonatomic) NSUInteger inputDestinationWidth;
 @property (nonatomic) NSUInteger inputDestinationHeight;
+@property (nonatomic) BOOL inputRenderSignal;
 @property (nonatomic, assign) id<QCPlugInOutputImageProvider> outputImage;
 @property (nonatomic) BOOL outputDoneSignal;
 @end

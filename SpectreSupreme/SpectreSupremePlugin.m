@@ -74,7 +74,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 
 @implementation SpectreSupremePlugIn
 
-@dynamic inputLocation, inputDestinationWidth, inputDestinationHeight, outputImage, outputDoneSignal;
+@dynamic inputLocation, inputDestinationWidth, inputDestinationHeight, inputRenderSignal, outputImage, outputDoneSignal;
 @synthesize placeHolderProvider = _placeHolderProvider, location = _location;
 
 + (NSDictionary*)attributes {
@@ -114,6 +114,8 @@ static void _BufferReleaseCallback(const void* address, void* context) {
             [NSNumber numberWithUnsignedInteger:0], QCPortAttributeMinimumValueKey, 
             [NSNumber numberWithUnsignedInteger:10000], QCPortAttributeMaximumValueKey, 
             [NSNumber numberWithUnsignedInteger:DESTINATION_HEIGHT_DEFAULT], QCPortAttributeDefaultValueKey, nil];
+    else if ([key isEqualToString:@"inputRenderSignal"])
+        return [NSDictionary dictionaryWithObjectsAndKeys:@"Render", QCPortAttributeNameKey, nil];
     else if ([key isEqualToString:@"outputImage"])
         return [NSDictionary dictionaryWithObjectsAndKeys:@"Image", QCPortAttributeNameKey, nil];
     else if ([key isEqualToString:@"outputDoneSignal"])
@@ -237,45 +239,50 @@ static void _BufferReleaseCallback(const void* address, void* context) {
         _doneSignal = NO;
     }
 
-    // check for input changes
-    if ([self didValueForInputKeyChange:@"inputDestinationWidth"] || [self didValueForInputKeyChange:@"inputDestinationHeight"]) {
+    BOOL shouldLoadURL = [self didValueForInputKeyChange:@"inputLocation"] && ![self.inputLocation isEqualToString:@""];
+    BOOL shouldResize = [self didValueForInputKeyChange:@"inputDestinationWidth"] || [self didValueForInputKeyChange:@"inputDestinationHeight"];
+    BOOL shouldRender = [self didValueForInputKeyChange:@"inputRenderSignal"] && self.inputRenderSignal;
+
+    // resize when appropriate
+    if (shouldResize) {
         _destinationWidth = self.inputDestinationWidth;
         _destinationHeight = self.inputDestinationHeight;
-        CCDebugLog(@"resize content to %lux%lu", (unsigned long)_destinationWidth, (unsigned long)_destinationHeight);
-        [_window setContentSize:NSMakeSize(_destinationWidth, _destinationHeight)];
-    } else if (![self didValueForInputKeyChange:@"inputLocation"]) {
+        CCDebugLog(@"will resize content to %lux%lu", (unsigned long)_destinationWidth, (unsigned long)_destinationHeight);
+    }
+    // bail when new render is not necessary
+    if (!shouldLoadURL && !shouldRender) {
         return YES;
     }
-
-
-    // bail on empty location
-    if ([self.inputLocation isEqualToString:@""])
-        return YES;
 
     CCDebugLogSelector();
 
-    NSURL* url = [NSURL URLWithString:self.inputLocation];
-    // scheme-less would suggest a relative file url
-    if (![url scheme]) {
-        NSURL* baseDirectoryURL = [[context compositionURL] URLByDeletingLastPathComponent];
-//        NSString* cleanFilePath = [[[baseDirectoryURL path] stringByAppendingPathComponent:self.inputLocation] stringByStandardizingPath];
-//        CCDebugLog(@"cleaned file path: %@", cleanFilePath);
-        url = [baseDirectoryURL URLByAppendingPathComponent:self.inputLocation];
-    }
+    if (shouldLoadURL) {
+        NSURL* url = [NSURL URLWithString:self.inputLocation];
+        // scheme-less would suggest a relative file url
+        if (![url scheme]) {
+            NSURL* baseDirectoryURL = [[context compositionURL] URLByDeletingLastPathComponent];
+//            NSString* cleanFilePath = [[[baseDirectoryURL path] stringByAppendingPathComponent:self.inputLocation] stringByStandardizingPath];
+//            CCDebugLog(@"cleaned file path: %@", cleanFilePath);
+            url = [baseDirectoryURL URLByAppendingPathComponent:self.inputLocation];
+        }
 
-    self.location = url;
-    CCDebugLog(@"will fetch: %@", url);
+        self.location = url;
+        CCDebugLog(@"will fetch: %@", url);
 #define DISPATH_ON_MAIN_THREAD 1
 #if DISPATH_ON_MAIN_THREAD
-    dispatch_async(dispatch_get_main_queue(), ^{
+        dispatch_async(dispatch_get_main_queue(), ^{
 #endif
-        [[_webView mainFrame] loadRequest:[NSURLRequest requestWithURL:url]];
-        if (![[_webView mainFrame] provisionalDataSource]) {
-            CCErrorLog(@"ERROR - web view missing data source, perhaps a bad url %@", url);
-        }
+            [_window setContentSize:NSMakeSize(_destinationWidth, _destinationHeight)];
+            [[_webView mainFrame] loadRequest:[NSURLRequest requestWithURL:url]];
+            if (![[_webView mainFrame] provisionalDataSource]) {
+                CCErrorLog(@"ERROR - web view missing data source, perhaps a bad url %@", url);
+            }
 #if DISPATH_ON_MAIN_THREAD
-    });
+        });
 #endif
+    } else if (shouldRender) {
+        [self _captureImageFromWebView];
+    }
 
 	return YES;
 }
@@ -305,8 +312,8 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 
     if (frame != [sender mainFrame])
         return;
-    NSView* documentView = [[[sender mainFrame] frameView ] documentView];
-	CCDebugLog(@"main frame: (%fx%f)", NSWidth(documentView.bounds), NSHeight(documentView.bounds));
+//    NSView* documentView = [[[sender mainFrame] frameView ] documentView];
+//    CCDebugLog(@"main frame: (%fx%f)", NSWidth(documentView.bounds), NSHeight(documentView.bounds));
 
     [self _captureImageFromWebView];
 }
@@ -356,6 +363,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 #if DISPATH_ON_MAIN_THREAD
     dispatch_async(dispatch_get_main_queue(), ^{
 #endif
+        // TODO - perhaps better to use a proper ock here rather than
         @synchronized(_webView) {
             // size to fit
             NSView* documentView = [[[_webView mainFrame] frameView] documentView];
@@ -367,11 +375,6 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 
             NSBitmapImageRep* bitmap = [_webView bitmapImageRepForCachingDisplayInRect:[_webView visibleRect]];
             [_webView cacheDisplayInRect:[_webView visibleRect] toBitmapImageRep:bitmap];
-
-            // return content size
-            if (shouldResize) {
-                [_window setContentSize:NSMakeSize(_destinationWidth, _destinationHeight)];
-            }
 
 //            NSString* path = [NSString stringWithFormat:@"/tmp/SS-%f.png", [[NSDate date] timeIntervalSince1970]];
 //            [[bitmap representationUsingType:NSPNGFileType properties:nil] writeToFile:path atomically:YES];
