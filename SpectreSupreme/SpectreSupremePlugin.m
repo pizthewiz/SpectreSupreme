@@ -74,7 +74,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 
 @implementation SpectreSupremePlugIn
 
-@dynamic inputLocation, outputImage, outputDoneSignal;
+@dynamic inputLocation, inputDestinationWidth, inputDestinationHeight, outputImage, outputDoneSignal;
 @synthesize placeHolderProvider = _placeHolderProvider, location = _location;
 
 + (NSDictionary*)attributes {
@@ -102,6 +102,18 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 + (NSDictionary*)attributesForPropertyPortWithKey:(NSString*)key {
     if ([key isEqualToString:@"inputLocation"])
         return [NSDictionary dictionaryWithObjectsAndKeys:@"Location", QCPortAttributeNameKey, nil];
+    else if ([key isEqualToString:@"inputDestinationWidth"])
+#define DESTINATION_WIDTH_DEFAULT 1680
+        return [NSDictionary dictionaryWithObjectsAndKeys:@"Width Pixels", QCPortAttributeNameKey, 
+            [NSNumber numberWithUnsignedInteger:0], QCPortAttributeMinimumValueKey, 
+            [NSNumber numberWithUnsignedInteger:10000], QCPortAttributeMaximumValueKey, 
+            [NSNumber numberWithUnsignedInteger:DESTINATION_WIDTH_DEFAULT], QCPortAttributeDefaultValueKey, nil];
+    else if ([key isEqualToString:@"inputDestinationHeight"])
+#define DESTINATION_HEIGHT_DEFAULT 1050
+        return [NSDictionary dictionaryWithObjectsAndKeys:@"Height Pixels", QCPortAttributeNameKey, 
+            [NSNumber numberWithUnsignedInteger:0], QCPortAttributeMinimumValueKey, 
+            [NSNumber numberWithUnsignedInteger:10000], QCPortAttributeMaximumValueKey, 
+            [NSNumber numberWithUnsignedInteger:DESTINATION_HEIGHT_DEFAULT], QCPortAttributeDefaultValueKey, nil];
     else if ([key isEqualToString:@"outputImage"])
         return [NSDictionary dictionaryWithObjectsAndKeys:@"Image", QCPortAttributeNameKey, nil];
     else if ([key isEqualToString:@"outputDoneSignal"])
@@ -122,8 +134,6 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 - (id)init {
     self = [super init];
     if (self) {
-#define DESTINATION_WIDTH_DEFAULT 1680
-#define DESTINATION_HEIGHT_DEFAULT 1050
         _destinationWidth = DESTINATION_WIDTH_DEFAULT;
         _destinationHeight = DESTINATION_HEIGHT_DEFAULT;
     }
@@ -227,9 +237,16 @@ static void _BufferReleaseCallback(const void* address, void* context) {
         _doneSignal = NO;
     }
 
-    // process input when location changes
-    if (![self didValueForInputKeyChange:@"inputLocation"])
+    // check for input changes
+    if ([self didValueForInputKeyChange:@"inputDestinationWidth"] || [self didValueForInputKeyChange:@"inputDestinationHeight"]) {
+        _destinationWidth = self.inputDestinationWidth;
+        _destinationHeight = self.inputDestinationHeight;
+        CCDebugLog(@"resize content to %lux%lu", (unsigned long)_destinationWidth, (unsigned long)_destinationHeight);
+        [_window setContentSize:NSMakeSize(_destinationWidth, _destinationHeight)];
+    } else if (![self didValueForInputKeyChange:@"inputLocation"]) {
         return YES;
+    }
+
 
     // bail on empty location
     if ([self.inputLocation isEqualToString:@""])
@@ -252,7 +269,6 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 #if DISPATH_ON_MAIN_THREAD
     dispatch_async(dispatch_get_main_queue(), ^{
 #endif
-//        [_window setContentSize:NSMakeSize(_destinationWidth, _destinationHeight)];
         [[_webView mainFrame] loadRequest:[NSURLRequest requestWithURL:url]];
         if (![[_webView mainFrame] provisionalDataSource]) {
             CCErrorLog(@"ERROR - web view missing data source, perhaps a bad url %@", url);
@@ -345,15 +361,17 @@ static void _BufferReleaseCallback(const void* address, void* context) {
             NSView* documentView = [[[_webView mainFrame] frameView] documentView];
             NSSize documentSize = [documentView bounds].size;
             BOOL shouldResize = !NSEqualSizes([(NSView*)[_window contentView] bounds].size, documentSize);
-            if (shouldResize)
+            if (shouldResize) {
                 [_window setContentSize:[documentView bounds].size];
+            }
 
             NSBitmapImageRep* bitmap = [_webView bitmapImageRepForCachingDisplayInRect:[_webView visibleRect]];
             [_webView cacheDisplayInRect:[_webView visibleRect] toBitmapImageRep:bitmap];
 
             // return content size
-            if (shouldResize)
+            if (shouldResize) {
                 [_window setContentSize:NSMakeSize(_destinationWidth, _destinationHeight)];
+            }
 
 //            NSString* path = [NSString stringWithFormat:@"/tmp/SS-%f.png", [[NSDate date] timeIntervalSince1970]];
 //            [[bitmap representationUsingType:NSPNGFileType properties:nil] writeToFile:path atomically:YES];

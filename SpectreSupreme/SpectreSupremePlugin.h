@@ -18,12 +18,14 @@
     id<QCPlugInOutputImageProvider> _placeHolderProvider;
 
     NSURL* _location;
-    CGFloat _destinationWidth;
-    CGFloat _destinationHeight;
+    NSUInteger _destinationWidth;
+    NSUInteger _destinationHeight;
     BOOL _doneSignal;
     BOOL _doneSignalDidChange;
 }
 @property (nonatomic, assign) NSString* inputLocation;
+@property (nonatomic) NSUInteger inputDestinationWidth;
+@property (nonatomic) NSUInteger inputDestinationHeight;
 @property (nonatomic, assign) id<QCPlugInOutputImageProvider> outputImage;
 @property (nonatomic) BOOL outputDoneSignal;
 @end
