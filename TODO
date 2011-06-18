@@ -3,9 +3,11 @@ NOW
 [X] render view as a bitmap
 [X] figure out why the output seems to lag sometimes
 [X] support relative file URLs by looking for a string starting with './' or '../'?
-[ ] width/height inputs for vector resources to target
+[ ] destination width and height
+[ ] render signal input
 
 LATER
-[ ] render signal input
 [ ] spin off rendering to a separate process
+[ ] source input
+[ ] javascript execute input
 [ ] GL direct pipeline?
