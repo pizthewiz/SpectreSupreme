@@ -1,4 +1,7 @@
 
+v0.1.2 (17 June 2011)
+* greatly improve bitmap capture from webview, faster and more robust
+
 v0.1.1 (15 June 2011)
 * support for relative file paths
 
