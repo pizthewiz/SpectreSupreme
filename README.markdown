@@ -8,7 +8,7 @@ move SpectreSupreme.plugin into ~/Library/Graphics/Quartz Composer Plug-Ins/
 ### NOTES
 * the Location input should be a fully qualified url with scheme, or a relative to the composition file path
 * the Width and Height inputs are measured in pixels and are primarily relevant for relative-sized content. fixed-size content will render into a view of the destination size, but will then be resized to the document's native size. if the desired destination size is a hard limit, one should compare the output image size to the desired input size and transform accordingly.
-* a resource renders in one-shot, continuous rendering is not offered but could be simulated through periodically changing the Location with an anchor or parameter
+* render occurs on change of any input or when the Render signal goes high. the Render signal could be tied to an LFO to periodically render an animated resource, but performance is currently not ideal for that.
 * rendering occurs on the main thread and depending on the complexity of the content, can stall the host application
 
 ### THANKS
