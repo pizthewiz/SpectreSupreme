@@ -4,7 +4,9 @@ NOW
 [X] figure out why the output seems to lag sometimes
 [X] support relative file URLs by looking for a string starting with './' or '../'?
 [X] destination width and height
-[ ] render signal input
+[~] render signal input
+[ ] find zombie on -[SpectreSupreme _teardownWindow]
+[ ] profile memory use with the render flag
 
 LATER
 [ ] spin off rendering to a separate process
