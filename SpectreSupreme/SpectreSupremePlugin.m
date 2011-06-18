@@ -245,6 +245,10 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 
     // resize when appropriate
     if (shouldResize) {
+        if (self.inputDestinationWidth == 0 || self.inputDestinationHeight == 0) {
+            CCErrorLog(@"ERROR - invalid dimensions %lux%lu", (unsigned long)self.inputDestinationWidth, (unsigned long)self.inputDestinationHeight);
+            return NO;
+        }
         _destinationWidth = self.inputDestinationWidth;
         _destinationHeight = self.inputDestinationHeight;
         CCDebugLog(@"resize content to %lux%lu", (unsigned long)_destinationWidth, (unsigned long)_destinationHeight);
