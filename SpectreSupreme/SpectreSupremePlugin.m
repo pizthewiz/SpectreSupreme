@@ -336,19 +336,15 @@ static void _BufferReleaseCallback(const void* address, void* context) {
             NSView* documentView = [[[_webView mainFrame] frameView] documentView];
             CCDebugLog(@"documentView: %fx%f", NSWidth(documentView.bounds), NSHeight(documentView.bounds));
             [_window setContentSize:[documentView bounds].size];
-            // NB - for some reason without this explicit -display call, svg content fails to render!
-            [_window display];
 
-            [_webView lockFocus];
-            NSBitmapImageRep* bitmap = [[NSBitmapImageRep alloc] initWithFocusedViewRect:[_webView visibleRect]];
-            [_webView mainFrame];
+            NSBitmapImageRep* bitmap = [_webView bitmapImageRepForCachingDisplayInRect:[_webView visibleRect]];
+            [_webView cacheDisplayInRect:[_webView visibleRect] toBitmapImageRep:bitmap];
 
 //            NSString* path = [NSString stringWithFormat:@"/tmp/SS-%f.png", [[NSDate date] timeIntervalSince1970]];
 //            [[bitmap representationUsingType:NSPNGFileType properties:nil] writeToFile:path atomically:YES];
 
             CGImageRelease(_renderedImage);
             _renderedImage = CGImageRetain([bitmap CGImage]);
-            [bitmap release];
 
             _doneSignal = YES;
             _doneSignalDidChange = YES;
