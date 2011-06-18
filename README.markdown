@@ -13,3 +13,4 @@ move SpectreSupreme.plugin into ~/Library/Graphics/Quartz Composer Plug-Ins/
 ### THANKS
 * Tamas Nagy (¿?¿?) and Anton Marini (vade) for the inspiration and point of reference through [CoGeWebKit](http://code.google.com/p/cogewebkit/)
 * Paul Hammond's [webkit2png](http://www.paulhammond.org/webkit2png/) for a vexing -[NSWindow display] hint
+* Mike Ash (mikeash) in #macdev for a much better way to get a bitmap of a view rather than -[NSWindow display], -[NSView lockFocus] and -[NSBitmapImageRep initWithFocusedViewRect:]
