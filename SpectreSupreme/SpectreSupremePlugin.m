@@ -16,7 +16,6 @@
 @end
 
 @implementation SSWindow
-
 - (BOOL)isOpaque {
     return NO;
 }
@@ -24,18 +23,14 @@
 - (NSColor*)backgroundColor {
     return [NSColor clearColor];
 }
-
 @end
 
 #pragma mark - WEBVIEW
 
 @interface SSWebView : WebView
-//@property (nonatomic, readonly) double documentWidth;
-//@property (nonatomic, readonly) double documentHeight;
 @end
 
 @implementation SSWebView
-
 - (BOOL)isOpaque {
     return NO;
 }
@@ -43,20 +38,13 @@
 - (BOOL)drawsBackground {
     return NO;
 }
-
-//- (double)documentWidth {
-//    return [[self stringByEvaluatingJavaScriptFromString:@"document.width"] doubleValue];
-//}
-//
-//- (double)documentHeight {
-//    return [[self stringByEvaluatingJavaScriptFromString:@"document.height"] doubleValue];
-//}
-
 @end
 
 #pragma mark - PLUGIN
 
-static NSString* SSExampleCompositionName = @"Render SVG";
+static NSString* const SSExampleCompositionName = @"Render SVG";
+static NSUInteger SSMainScreenWidth = 0;
+static NSUInteger SSMainScreenHeight = 0;
 
 static void _BufferReleaseCallback(const void* address, void* context) {
     CCDebugLog(@"_BufferReleaseCallback");
@@ -76,6 +64,11 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 
 @dynamic inputLocation, inputDestinationWidth, inputDestinationHeight, inputRenderSignal, outputImage, outputDoneSignal;
 @synthesize placeHolderProvider = _placeHolderProvider, location = _location;
+
++ (void)initialize {
+    SSMainScreenWidth = NSWidth([[NSScreen mainScreen] frame]);
+    SSMainScreenHeight = NSHeight([[NSScreen mainScreen] frame]);
+}
 
 + (NSDictionary*)attributes {
     NSMutableDictionary* attributes = [NSDictionary dictionaryWithObjectsAndKeys: 
@@ -103,17 +96,15 @@ static void _BufferReleaseCallback(const void* address, void* context) {
     if ([key isEqualToString:@"inputLocation"])
         return [NSDictionary dictionaryWithObjectsAndKeys:@"Location", QCPortAttributeNameKey, nil];
     else if ([key isEqualToString:@"inputDestinationWidth"])
-#define DESTINATION_WIDTH_DEFAULT 1680
         return [NSDictionary dictionaryWithObjectsAndKeys:@"Width Pixels", QCPortAttributeNameKey, 
             [NSNumber numberWithUnsignedInteger:0], QCPortAttributeMinimumValueKey, 
             [NSNumber numberWithUnsignedInteger:10000], QCPortAttributeMaximumValueKey, 
-            [NSNumber numberWithUnsignedInteger:DESTINATION_WIDTH_DEFAULT], QCPortAttributeDefaultValueKey, nil];
+            [NSNumber numberWithUnsignedInteger:SSMainScreenWidth], QCPortAttributeDefaultValueKey, nil];
     else if ([key isEqualToString:@"inputDestinationHeight"])
-#define DESTINATION_HEIGHT_DEFAULT 1050
         return [NSDictionary dictionaryWithObjectsAndKeys:@"Height Pixels", QCPortAttributeNameKey, 
             [NSNumber numberWithUnsignedInteger:0], QCPortAttributeMinimumValueKey, 
             [NSNumber numberWithUnsignedInteger:10000], QCPortAttributeMaximumValueKey, 
-            [NSNumber numberWithUnsignedInteger:DESTINATION_HEIGHT_DEFAULT], QCPortAttributeDefaultValueKey, nil];
+            [NSNumber numberWithUnsignedInteger:SSMainScreenHeight], QCPortAttributeDefaultValueKey, nil];
     else if ([key isEqualToString:@"inputRenderSignal"])
         return [NSDictionary dictionaryWithObjectsAndKeys:@"Render", QCPortAttributeNameKey, nil];
     else if ([key isEqualToString:@"outputImage"])
@@ -136,8 +127,8 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 - (id)init {
     self = [super init];
     if (self) {
-        _destinationWidth = DESTINATION_WIDTH_DEFAULT;
-        _destinationHeight = DESTINATION_HEIGHT_DEFAULT;
+        _destinationWidth = SSMainScreenWidth;
+        _destinationHeight = SSMainScreenHeight;
     }
     return self;
 }
@@ -358,7 +349,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
             [_window release];
             _window = nil;
             [_webView release];
-            _webView = nil;            
+            _webView = nil;
         }
 #if DISPATH_ON_MAIN_THREAD
     });
