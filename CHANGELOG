@@ -1,4 +1,7 @@
 
+v0.2.1 (19 June 2011)
+* fix crash on quit from deferred off-screen window cleanup
+
 v0.2.0 (18 June 2011)
 * expose destination width and height for relative-sized content
 * offer an explicit render signal to re-render loaded content
