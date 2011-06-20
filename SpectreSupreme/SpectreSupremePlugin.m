@@ -341,19 +341,19 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 
 - (void)_teardownWindow {
     CCDebugLogSelector();
-#if DISPATH_ON_MAIN_THREAD
-    dispatch_async(dispatch_get_main_queue(), ^{
-#endif
-        @synchronized(_window) {
+//#if DISPATH_ON_MAIN_THREAD
+//    dispatch_async(dispatch_get_main_queue(), ^{
+//#endif
+//        @synchronized(_window) {
             [_window close];
             [_window release];
             _window = nil;
             [_webView release];
             _webView = nil;
-        }
-#if DISPATH_ON_MAIN_THREAD
-    });
-#endif
+//        }
+//#if DISPATH_ON_MAIN_THREAD
+//    });
+//#endif
 }
 
 - (void)_captureImageFromWebView {
