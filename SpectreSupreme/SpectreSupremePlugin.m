@@ -362,28 +362,25 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 #if DISPATH_ON_MAIN_THREAD
     dispatch_async(dispatch_get_main_queue(), ^{
 #endif
-        // TODO - perhaps better to use a proper ock here rather than
-        @synchronized(_webView) {
-            // size to fit
-            NSView* documentView = [[[_webView mainFrame] frameView] documentView];
-            NSSize documentSize = [documentView bounds].size;
-            BOOL shouldResize = !NSEqualSizes([(NSView*)[_window contentView] bounds].size, documentSize);
-            if (shouldResize) {
-                [_window setContentSize:[documentView bounds].size];
-            }
-
-            NSBitmapImageRep* bitmap = [_webView bitmapImageRepForCachingDisplayInRect:[_webView visibleRect]];
-            [_webView cacheDisplayInRect:[_webView visibleRect] toBitmapImageRep:bitmap];
-
-//            NSString* path = [NSString stringWithFormat:@"/tmp/SS-%f.png", [[NSDate date] timeIntervalSince1970]];
-//            [[bitmap representationUsingType:NSPNGFileType properties:nil] writeToFile:path atomically:YES];
-
-            CGImageRelease(_renderedImage);
-            _renderedImage = CGImageRetain([bitmap CGImage]);
-
-            _doneSignal = YES;
-            _doneSignalDidChange = YES;
+        // size to fit
+        NSView* documentView = [[[_webView mainFrame] frameView] documentView];
+        NSSize documentSize = [documentView bounds].size;
+        BOOL shouldResize = !NSEqualSizes([(NSView*)[_window contentView] bounds].size, documentSize);
+        if (shouldResize) {
+            [_window setContentSize:[documentView bounds].size];
         }
+
+        NSBitmapImageRep* bitmap = [_webView bitmapImageRepForCachingDisplayInRect:[_webView visibleRect]];
+        [_webView cacheDisplayInRect:[_webView visibleRect] toBitmapImageRep:bitmap];
+
+        NSString* path = [NSString stringWithFormat:@"/tmp/SS-%f.png", [[NSDate date] timeIntervalSince1970]];
+        [[bitmap representationUsingType:NSPNGFileType properties:nil] writeToFile:path atomically:YES];
+
+        CGImageRelease(_renderedImage);
+        _renderedImage = CGImageRetain([bitmap CGImage]);
+
+        _doneSignal = YES;
+        _doneSignalDidChange = YES;
 #if DISPATH_ON_MAIN_THREAD
     });
 #endif
