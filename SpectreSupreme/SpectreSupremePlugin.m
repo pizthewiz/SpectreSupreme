@@ -264,18 +264,13 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 
         self.location = url;
         CCDebugLog(@"will fetch: %@", url);
-#define DISPATH_ON_MAIN_THREAD 1
-#if DISPATH_ON_MAIN_THREAD
         dispatch_async(dispatch_get_main_queue(), ^{
-#endif
             [_window setContentSize:NSMakeSize(_destinationWidth, _destinationHeight)];
             [[_webView mainFrame] loadRequest:[NSURLRequest requestWithURL:url]];
             if (![[_webView mainFrame] provisionalDataSource]) {
                 CCErrorLog(@"ERROR - web view missing data source, perhaps a bad url %@", url);
             }
-#if DISPATH_ON_MAIN_THREAD
         });
-#endif
     } else if (shouldRender) {
         [self _captureImageFromWebView];
     }
@@ -327,39 +322,29 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 #pragma mark - PRIVATE
 
 - (void)_setupWindow {
-#if DISPATH_ON_MAIN_THREAD
     dispatch_async(dispatch_get_main_queue(), ^{
-#endif
         _window = [[SSWindow alloc] initWithContentRect:NSMakeRect(-16000., -16000., _destinationWidth, _destinationHeight) styleMask:NSBorderlessWindowMask backing:NSBackingStoreBuffered defer:NO];
         _webView = [[SSWebView alloc] initWithFrame:NSMakeRect(0., 0., _destinationWidth, _destinationHeight) frameName:nil groupName:nil];
         _webView.frameLoadDelegate = self;
         [_window setContentView:_webView];
-#if DISPATH_ON_MAIN_THREAD
     });
-#endif
 }
 
 - (void)_teardownWindow {
     CCDebugLogSelector();
-#if DISPATH_ON_MAIN_THREAD
     dispatch_sync(dispatch_get_main_queue(), ^{
-#endif
         [_window close];
         [_window release];
         _window = nil;
         [_webView release];
         _webView = nil;
-#if DISPATH_ON_MAIN_THREAD
     });
-#endif
 }
 
 - (void)_captureImageFromWebView {
     CCDebugLogSelector();
 
-#if DISPATH_ON_MAIN_THREAD
     dispatch_async(dispatch_get_main_queue(), ^{
-#endif
         // size to fit
         NSView* documentView = [[[_webView mainFrame] frameView] documentView];
         NSSize documentSize = [documentView bounds].size;
@@ -379,9 +364,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 
         _doneSignal = YES;
         _doneSignalDidChange = YES;
-#if DISPATH_ON_MAIN_THREAD
     });
-#endif
 }
 
 @end
