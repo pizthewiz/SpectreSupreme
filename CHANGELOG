@@ -1,4 +1,7 @@
 
+v0.2.2 (22 June 2011)
+* minor performance improvement on image capture from web resource
+
 v0.2.1 (19 June 2011)
 * fix crash on quit from deferred off-screen window cleanup
 
