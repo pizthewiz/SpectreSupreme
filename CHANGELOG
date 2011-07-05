@@ -1,4 +1,7 @@
 
+v0.2.3 (4 July 2011)
+* workaround hang on dealloc from deferred off-screen window cleanup again (again)
+
 v0.2.2 (22 June 2011)
 * minor performance improvement on image capture from web resource
 
