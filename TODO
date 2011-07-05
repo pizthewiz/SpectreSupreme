@@ -9,7 +9,10 @@ NOW
 [ ] profile memory use with the render flag
 
 LATER
-[ ] spin off rendering to a separate process
-[ ] source input
+[/] spin off rendering to a separate process
+    not needed, the rendering happens off the main process as it is
+[ ] offer source input
+[ ] provide dynamic SVG creation example
+[ ] provide dynamic canvas creation example
 [ ] javascript execute input
 [ ] GL direct pipeline?
