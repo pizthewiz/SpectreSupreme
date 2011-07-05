@@ -332,13 +332,14 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 
 - (void)_teardownWindow {
     CCDebugLogSelector();
-    dispatch_sync(dispatch_get_main_queue(), ^{
+    // NB - only called from dealloc/finalize, perhaps that only occurs on the main thread anyways?
+//    dispatch_sync(dispatch_get_main_queue(), ^{
         [_window close];
         [_window release];
         _window = nil;
         [_webView release];
         _webView = nil;
-    });
+//    });
 }
 
 - (void)_captureImageFromWebView {
