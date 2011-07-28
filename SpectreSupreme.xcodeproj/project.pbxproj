@@ -13,6 +13,9 @@
 		D815A71613A711DD0063686A /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D815A70313A70F270063686A /* AppKit.framework */; };
 		D815A72713A716750063686A /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = D815A72513A716750063686A /* Localizable.strings */; };
 		D815A73913A7471F0063686A /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D815A73813A7470E0063686A /* WebKit.framework */; };
+		D864241613E12DC6002B9A65 /* Render SVG.qtz in Resources */ = {isa = PBXBuildFile; fileRef = D88C967013A7E92000C88D56 /* Render SVG.qtz */; };
+		D864241713E12DC8002B9A65 /* SVG-logo.svg in Resources */ = {isa = PBXBuildFile; fileRef = D8A94BBF13A95C670035EB75 /* SVG-logo.svg */; };
+		D864241813E12DCA002B9A65 /* Trajans-Column-lower-animated.svg in Resources */ = {isa = PBXBuildFile; fileRef = D8A94BC013A95C670035EB75 /* Trajans-Column-lower-animated.svg */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -145,6 +148,9 @@
 /* Begin PBXProject section */
 		D815A6F113A70F270063686A /* Project object */ = {
 			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0420;
+			};
 			buildConfigurationList = D815A6F413A70F270063686A /* Build configuration list for PBXProject "SpectreSupreme" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
@@ -169,6 +175,9 @@
 			files = (
 				D815A70D13A70F270063686A /* InfoPlist.strings in Resources */,
 				D815A72713A716750063686A /* Localizable.strings in Resources */,
+				D864241613E12DC6002B9A65 /* Render SVG.qtz in Resources */,
+				D864241713E12DC8002B9A65 /* SVG-logo.svg in Resources */,
+				D864241813E12DCA002B9A65 /* Trajans-Column-lower-animated.svg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -201,7 +210,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "/usr/bin/rake update_bundle_version\n";
+			shellScript = "/usr/local/bin/macrake update_bundle_version\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 

@@ -71,7 +71,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 }
 
 + (NSDictionary*)attributes {
-    NSMutableDictionary* attributes = [NSDictionary dictionaryWithObjectsAndKeys: 
+    NSMutableDictionary* attributes = [NSMutableDictionary dictionaryWithObjectsAndKeys: 
         CCLocalizedString(@"kQCPlugIn_Name", NULL), QCPlugInAttributeNameKey, 
         CCLocalizedString(@"kQCPlugIn_Description", NULL), QCPlugInAttributeDescriptionKey, 
         nil];
@@ -84,7 +84,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
     }
     if (&QCPlugInAttributeExamplesKey != NULL) {
         // array of file paths or urls relative to plugin resources
-        NSArray* examples = [NSArray arrayWithObjects:[[NSBundle mainBundle] URLForResource:SSExampleCompositionName withExtension:@"qtz"], nil];
+        NSArray* examples = [NSArray arrayWithObjects:[[NSBundle bundleForClass:[self class]] URLForResource:SSExampleCompositionName withExtension:@"qtz"], nil];
         [attributes setObject:examples forKey:QCPlugInAttributeExamplesKey];
     }
 #endif
