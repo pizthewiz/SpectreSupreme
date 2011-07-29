@@ -79,7 +79,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 #if defined(MAC_OS_X_VERSION_10_7) && (MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_7)
     if (&QCPlugInAttributeCategoriesKey != NULL) {
         // array with category strings
-        NSArray* categories = [NSArray arrayWithObjects:@"obviously", @"fake", nil];
+        NSArray* categories = [NSArray arrayWithObjects:@"Source", nil];
         [attributes setObject:categories forKey:QCPlugInAttributeCategoriesKey];
     }
     if (&QCPlugInAttributeExamplesKey != NULL) {
