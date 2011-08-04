@@ -1,4 +1,8 @@
 
+v0.2.4 (3 Aug 2011)
+* fix crash on close due to double releasing the off-screen rendering window
+* bundle example composition and categorize patch on lion
+
 v0.2.3 (4 July 2011)
 * workaround hang on dealloc from deferred off-screen window cleanup again (again)
 
