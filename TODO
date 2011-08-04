@@ -5,7 +5,8 @@ NOW
 [X] support relative file URLs by looking for a string starting with './' or '../'?
 [X] destination width and height
 [~] render signal input
-[ ] find zombie on -[SpectreSupreme _teardownWindow]
+[X] find zombie on -[SpectreSupreme _teardownWindow]
+[X] crash on close, objc_msgSend() on AutoreleasePoolPop
 [ ] profile memory use with the render flag
 
 LATER
