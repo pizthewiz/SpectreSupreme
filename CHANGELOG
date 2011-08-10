@@ -1,4 +1,7 @@
 
+v0.2.4 (9 Aug 2011)
+* fix plugin loading problem on 10.6 when built on 10.7
+
 v0.2.4 (3 Aug 2011)
 * fix crash on close due to double releasing the off-screen rendering window
 * bundle example composition and categorize patch on lion

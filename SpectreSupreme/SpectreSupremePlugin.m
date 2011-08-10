@@ -10,6 +10,10 @@
 #import "SpectreSupreme.h"
 #import <WebKit/WebKit.h>
 
+// WORKAROUND - radar://problem/9927446 Lion added QCPlugInAttribute key constants not weak linked
+#pragma weak QCPlugInAttributeCategoriesKey
+#pragma weak QCPlugInAttributeExamplesKey
+
 #pragma mark WINDOW
 
 @interface SSWindow : NSWindow
