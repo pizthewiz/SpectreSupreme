@@ -23,10 +23,10 @@
     BOOL _doneSignal;
     BOOL _doneSignalDidChange;
 }
-@property (nonatomic, assign) NSString* inputLocation;
+@property (nonatomic, unsafe_unretained) NSString* inputLocation;
 @property (nonatomic) NSUInteger inputDestinationWidth;
 @property (nonatomic) NSUInteger inputDestinationHeight;
 @property (nonatomic) BOOL inputRenderSignal;
-@property (nonatomic, assign) id<QCPlugInOutputImageProvider> outputImage;
+@property (nonatomic, unsafe_unretained) id<QCPlugInOutputImageProvider> outputImage;
 @property (nonatomic) BOOL outputDoneSignal;
 @end

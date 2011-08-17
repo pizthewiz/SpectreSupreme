@@ -57,8 +57,8 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 }
 
 @interface SpectreSupremePlugIn()
-@property (nonatomic, retain) id <QCPlugInOutputImageProvider> placeHolderProvider;
-@property (nonatomic, retain) NSURL* location;
+@property (nonatomic, strong) id <QCPlugInOutputImageProvider> placeHolderProvider;
+@property (nonatomic, strong) NSURL* location;
 - (void)_setupWindow;
 - (void)_teardownWindow;
 - (void)_captureImageFromWebView;
@@ -142,7 +142,6 @@ static void _BufferReleaseCallback(const void* address, void* context) {
     CGImageRelease(_renderedImage);
     self.placeHolderProvider = nil;
     
-    [_location release];
 
 	[super finalize];
 }
@@ -150,11 +149,8 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 - (void)dealloc {
     [self _teardownWindow];
     CGImageRelease(_renderedImage);
-    self.placeHolderProvider = nil;
 
-    [_location release];
 
-	[super dealloc];
 }
 
 #pragma mark - EXECUTION
@@ -338,14 +334,9 @@ static void _BufferReleaseCallback(const void* address, void* context) {
     CCDebugLogSelector();
 
     [_window setContentView:nil];
-    [_webView release];
     _webView = nil;
 
-    BOOL shouldRelease = ![_window isReleasedWhenClosed];
     [_window close];
-    if (shouldRelease) {
-        [_window release];
-    }
     _window = nil;
 }
 

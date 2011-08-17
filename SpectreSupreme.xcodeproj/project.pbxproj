@@ -299,7 +299,7 @@
 		D815A71413A70F270063686A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				GCC_ENABLE_OBJC_GC = supported;
+				CLANG_ENABLE_OBJC_ARC = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SpectreSupreme/SpectreSupreme-Prefix.pch";
 				INFOPLIST_FILE = "SpectreSupreme/SpectreSupreme-Info.plist";
@@ -312,7 +312,7 @@
 		D815A71513A70F270063686A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				GCC_ENABLE_OBJC_GC = supported;
+				CLANG_ENABLE_OBJC_ARC = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SpectreSupreme/SpectreSupreme-Prefix.pch";
 				INFOPLIST_FILE = "SpectreSupreme/SpectreSupreme-Info.plist";
