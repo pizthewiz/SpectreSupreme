@@ -326,12 +326,12 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 #pragma mark - PRIVATE
 
 - (void)_setupWindow {
-    dispatch_async(dispatch_get_main_queue(), ^{
+//    dispatch_async(dispatch_get_main_queue(), ^{
         _window = [[SSWindow alloc] initWithContentRect:NSMakeRect(-16000., -16000., _destinationWidth, _destinationHeight) styleMask:NSBorderlessWindowMask backing:NSBackingStoreBuffered defer:NO];
         _webView = [[SSWebView alloc] initWithFrame:NSMakeRect(0., 0., _destinationWidth, _destinationHeight) frameName:nil groupName:nil];
         _webView.frameLoadDelegate = self;
         [_window setContentView:_webView];
-    });
+//    });
 }
 
 - (void)_teardownWindow {
@@ -364,8 +364,8 @@ static void _BufferReleaseCallback(const void* address, void* context) {
         NSBitmapImageRep* bitmap = [_webView bitmapImageRepForCachingDisplayInRect:[_webView visibleRect]];
         [_webView cacheDisplayInRect:[_webView visibleRect] toBitmapImageRep:bitmap];
 
-        NSString* path = [NSString stringWithFormat:@"/tmp/SS-%f.png", [[NSDate date] timeIntervalSince1970]];
-        [[bitmap representationUsingType:NSPNGFileType properties:nil] writeToFile:path atomically:YES];
+//        NSString* path = [NSString stringWithFormat:@"/tmp/SS-%f.png", [[NSDate date] timeIntervalSince1970]];
+//        [[bitmap representationUsingType:NSPNGFileType properties:nil] writeToFile:path atomically:YES];
 
         CGImageRelease(_renderedImage);
         _renderedImage = CGImageRetain([bitmap CGImage]);
