@@ -1,4 +1,8 @@
 
+v0.2.6 (17 Aug 2011)
+* remove debug rendered image writing to /tmp/
+* use arc on 10.7 and arclite on 10.6
+
 v0.2.4 (9 Aug 2011)
 * fix plugin loading problem on 10.6 when built on 10.7
 
