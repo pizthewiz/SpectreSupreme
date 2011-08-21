@@ -10,9 +10,9 @@
 		D815A70113A70F270063686A /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D815A70013A70F270063686A /* Quartz.framework */; };
 		D815A70D13A70F270063686A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = D815A70B13A70F270063686A /* InfoPlist.strings */; };
 		D815A71013A70F270063686A /* SpectreSupremePlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = D815A70F13A70F270063686A /* SpectreSupremePlugin.m */; };
-		D815A71613A711DD0063686A /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D815A70313A70F270063686A /* AppKit.framework */; };
 		D815A72713A716750063686A /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = D815A72513A716750063686A /* Localizable.strings */; };
 		D815A73913A7471F0063686A /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D815A73813A7470E0063686A /* WebKit.framework */; };
+		D828E88813FD86B7008A9850 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D815A70313A70F270063686A /* AppKit.framework */; };
 		D864241613E12DC6002B9A65 /* Render SVG.qtz in Resources */ = {isa = PBXBuildFile; fileRef = D88C967013A7E92000C88D56 /* Render SVG.qtz */; };
 		D864241713E12DC8002B9A65 /* SVG-logo.svg in Resources */ = {isa = PBXBuildFile; fileRef = D8A94BBF13A95C670035EB75 /* SVG-logo.svg */; };
 		D864241813E12DCA002B9A65 /* Trajans-Column-lower-animated.svg in Resources */ = {isa = PBXBuildFile; fileRef = D8A94BC013A95C670035EB75 /* Trajans-Column-lower-animated.svg */; };
@@ -20,7 +20,6 @@
 
 /* Begin PBXFileReference section */
 		D815A6FB13A70F270063686A /* SpectreSupreme.plugin */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SpectreSupreme.plugin; sourceTree = BUILT_PRODUCTS_DIR; };
-		D815A6FE13A70F270063686A /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		D815A70013A70F270063686A /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = System/Library/Frameworks/Quartz.framework; sourceTree = SDKROOT; };
 		D815A70313A70F270063686A /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		D815A70513A70F270063686A /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -46,9 +45,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D815A71613A711DD0063686A /* AppKit.framework in Frameworks */,
 				D815A70113A70F270063686A /* Quartz.framework in Frameworks */,
 				D815A73913A7471F0063686A /* WebKit.framework in Frameworks */,
+				D828E88813FD86B7008A9850 /* AppKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -75,8 +74,8 @@
 		D815A6FD13A70F270063686A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				D815A6FE13A70F270063686A /* Cocoa.framework */,
 				D815A70013A70F270063686A /* Quartz.framework */,
+				D815A70313A70F270063686A /* AppKit.framework */,
 				D815A73813A7470E0063686A /* WebKit.framework */,
 				D815A70213A70F270063686A /* Other Frameworks */,
 			);
@@ -86,7 +85,6 @@
 		D815A70213A70F270063686A /* Other Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				D815A70313A70F270063686A /* AppKit.framework */,
 				D815A70513A70F270063686A /* Foundation.framework */,
 			);
 			name = "Other Frameworks";
