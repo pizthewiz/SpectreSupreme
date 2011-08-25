@@ -110,7 +110,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
             [NSNumber numberWithUnsignedInteger:10000], QCPortAttributeMaximumValueKey, 
             [NSNumber numberWithUnsignedInteger:SSMainScreenHeight], QCPortAttributeDefaultValueKey, nil];
     else if ([key isEqualToString:@"inputRenderSignal"])
-        return [NSDictionary dictionaryWithObjectsAndKeys:@"Render", QCPortAttributeNameKey, nil];
+        return [NSDictionary dictionaryWithObjectsAndKeys:@"Render Signal", QCPortAttributeNameKey, nil];
     else if ([key isEqualToString:@"outputImage"])
         return [NSDictionary dictionaryWithObjectsAndKeys:@"Image", QCPortAttributeNameKey, nil];
     else if ([key isEqualToString:@"outputDoneSignal"])
@@ -141,7 +141,6 @@ static void _BufferReleaseCallback(const void* address, void* context) {
     [self _teardownWindow];
     CGImageRelease(_renderedImage);
     self.placeHolderProvider = nil;
-    
 
 	[super finalize];
 }
@@ -149,8 +148,6 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 - (void)dealloc {
     [self _teardownWindow];
     CGImageRelease(_renderedImage);
-
-
 }
 
 #pragma mark - EXECUTION
