@@ -10,10 +10,6 @@
 #import "SpectreSupreme.h"
 #import <WebKit/WebKit.h>
 
-// WORKAROUND - radar://problem/9927446 Lion added QCPlugInAttribute key constants not weak linked
-#pragma weak QCPlugInAttributeCategoriesKey
-#pragma weak QCPlugInAttributeExamplesKey
-
 #pragma mark WINDOW
 
 @interface SSWindow : NSWindow
@@ -75,25 +71,12 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 }
 
 + (NSDictionary*)attributes {
-    NSMutableDictionary* attributes = [NSMutableDictionary dictionaryWithObjectsAndKeys: 
+    return [NSDictionary dictionaryWithObjectsAndKeys: 
         CCLocalizedString(@"kQCPlugIn_Name", NULL), QCPlugInAttributeNameKey, 
         CCLocalizedString(@"kQCPlugIn_Description", NULL), QCPlugInAttributeDescriptionKey, 
+        [NSArray arrayWithObjects:@"Source", nil], QCPlugInAttributeCategoriesKey,
+        [NSArray arrayWithObjects:[[NSBundle bundleForClass:[self class]] URLForResource:SSExampleCompositionName withExtension:@"qtz"], nil], QCPlugInAttributeExamplesKey, 
         nil];
-
-#if defined(MAC_OS_X_VERSION_10_7) && (MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_7)
-    if (&QCPlugInAttributeCategoriesKey != NULL) {
-        // array with category strings
-        NSArray* categories = [NSArray arrayWithObjects:@"Source", nil];
-        [attributes setObject:categories forKey:QCPlugInAttributeCategoriesKey];
-    }
-    if (&QCPlugInAttributeExamplesKey != NULL) {
-        // array of file paths or urls relative to plugin resources
-        NSArray* examples = [NSArray arrayWithObjects:[[NSBundle bundleForClass:[self class]] URLForResource:SSExampleCompositionName withExtension:@"qtz"], nil];
-        [attributes setObject:examples forKey:QCPlugInAttributeExamplesKey];
-    }
-#endif
-
-    return (NSDictionary*)attributes;
 }
 
 + (NSDictionary*)attributesForPropertyPortWithKey:(NSString*)key {
