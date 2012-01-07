@@ -3,7 +3,7 @@
 //  SpectreSupreme
 //
 //  Created by Jean-Pierre Mouilleseaux on 13 Jun 2011.
-//  Copyright 2011 Chorded Constructions. All rights reserved.
+//  Copyright 2011-2012 Chorded Constructions. All rights reserved.
 //
 
 #import "SpectreSupremePlugIn.h"
@@ -143,7 +143,9 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 
     CCDebugLogSelector();
 
-    [self _setupWindow];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self _setupWindow];
+    });
 
     return YES;
 }
@@ -223,7 +225,9 @@ static void _BufferReleaseCallback(const void* address, void* context) {
         _destinationWidth = self.inputDestinationWidth;
         _destinationHeight = self.inputDestinationHeight;
         CCDebugLog(@"resize content to %lux%lu", (unsigned long)_destinationWidth, (unsigned long)_destinationHeight);
-        [_window setContentSize:NSMakeSize(_destinationWidth, _destinationHeight)];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [_window setContentSize:NSMakeSize(_destinationWidth, _destinationHeight)];
+        });
     }
     // bail when new render is not necessary
     if (!shouldLoadURL && !shouldRender) {
@@ -252,7 +256,9 @@ static void _BufferReleaseCallback(const void* address, void* context) {
             }
         });
     } else if (shouldRender) {
-        [self _captureImageFromWebView];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self _captureImageFromWebView];
+        });
     }
 
 	return YES;
@@ -286,7 +292,9 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 //    NSView* documentView = [[[sender mainFrame] frameView ] documentView];
 //    CCDebugLog(@"main frame: (%fx%f)", NSWidth(documentView.bounds), NSHeight(documentView.bounds));
 
-    [self _captureImageFromWebView];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self _captureImageFromWebView];
+    });
 }
 
 - (void)webView:(WebView*)sender didFailProvisionalLoadWithError:(NSError*)error forFrame:(WebFrame*)frame {
@@ -302,12 +310,10 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 #pragma mark - PRIVATE
 
 - (void)_setupWindow {
-//    dispatch_async(dispatch_get_main_queue(), ^{
-        _window = [[SSWindow alloc] initWithContentRect:NSMakeRect(-16000., -16000., _destinationWidth, _destinationHeight) styleMask:NSBorderlessWindowMask backing:NSBackingStoreBuffered defer:NO];
-        _webView = [[SSWebView alloc] initWithFrame:NSMakeRect(0., 0., _destinationWidth, _destinationHeight) frameName:nil groupName:nil];
-        _webView.frameLoadDelegate = self;
-        [_window setContentView:_webView];
-//    });
+    _window = [[SSWindow alloc] initWithContentRect:NSMakeRect(-16000., -16000., _destinationWidth, _destinationHeight) styleMask:NSBorderlessWindowMask backing:NSBackingStoreBuffered defer:NO];
+    _webView = [[SSWebView alloc] initWithFrame:NSMakeRect(0., 0., _destinationWidth, _destinationHeight) frameName:nil groupName:nil];
+    _webView.frameLoadDelegate = self;
+    [_window setContentView:_webView];
 }
 
 - (void)_teardownWindow {
@@ -323,27 +329,25 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 - (void)_captureImageFromWebView {
     CCDebugLogSelector();
 
-    dispatch_async(dispatch_get_main_queue(), ^{
-        // size to fit
-        NSView* documentView = [[[_webView mainFrame] frameView] documentView];
-        NSSize documentSize = [documentView bounds].size;
-        BOOL shouldResize = !NSEqualSizes([(NSView*)[_window contentView] bounds].size, documentSize);
-        if (shouldResize) {
-            [_window setContentSize:[documentView bounds].size];
-        }
+    // size to fit
+    NSView* documentView = [[[_webView mainFrame] frameView] documentView];
+    NSSize documentSize = [documentView bounds].size;
+    BOOL shouldResize = !NSEqualSizes([(NSView*)[_window contentView] bounds].size, documentSize);
+    if (shouldResize) {
+        [_window setContentSize:[documentView bounds].size];
+    }
 
-        NSBitmapImageRep* bitmap = [_webView bitmapImageRepForCachingDisplayInRect:[_webView visibleRect]];
-        [_webView cacheDisplayInRect:[_webView visibleRect] toBitmapImageRep:bitmap];
+    NSBitmapImageRep* bitmap = [_webView bitmapImageRepForCachingDisplayInRect:[_webView visibleRect]];
+    [_webView cacheDisplayInRect:[_webView visibleRect] toBitmapImageRep:bitmap];
 
-//        NSString* path = [NSString stringWithFormat:@"/tmp/SS-%f.png", [[NSDate date] timeIntervalSince1970]];
-//        [[bitmap representationUsingType:NSPNGFileType properties:nil] writeToFile:path atomically:YES];
+//    NSString* path = [NSString stringWithFormat:@"/tmp/SS-%f.png", [[NSDate date] timeIntervalSince1970]];
+//    [[bitmap representationUsingType:NSPNGFileType properties:nil] writeToFile:path atomically:YES];
 
-        CGImageRelease(_renderedImage);
-        _renderedImage = CGImageRetain([bitmap CGImage]);
+    CGImageRelease(_renderedImage);
+    _renderedImage = CGImageRetain([bitmap CGImage]);
 
-        _doneSignal = YES;
-        _doneSignalDidChange = YES;
-    });
+    _doneSignal = YES;
+    _doneSignalDidChange = YES;
 }
 
 @end

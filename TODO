@@ -8,6 +8,7 @@ NOW
 [X] find zombie on -[SpectreSupreme _teardownWindow]
 [X] crash on close, objc_msgSend() on AutoreleasePoolPop
 [ ] profile memory use with the render flag
+[X] only interact with the webview on the main queue to avoid threading issues
 
 LATER
 [/] spin off rendering to a separate process
