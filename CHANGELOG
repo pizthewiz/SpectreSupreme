@@ -1,4 +1,7 @@
 
+v0.2.7 (7 Jan 2012)
+* webview confined to main queue to avoid threading issues in apps that render off the main thread
+
 v0.2.6 (17 Aug 2011)
 * remove debug rendered image writing to /tmp/
 * use arc on 10.7 and arclite on 10.6
