@@ -120,14 +120,6 @@ static void _BufferReleaseCallback(const void* address, void* context) {
     return self;
 }
 
-- (void)finalize {
-    [self _teardownWindow];
-    CGImageRelease(_renderedImage);
-    self.placeHolderProvider = nil;
-
-	[super finalize];
-}
-
 - (void)dealloc {
     [self _teardownWindow];
     CGImageRelease(_renderedImage);
