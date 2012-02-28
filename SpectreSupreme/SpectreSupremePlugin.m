@@ -9,6 +9,7 @@
 #import "SpectreSupremePlugIn.h"
 #import "SpectreSupreme.h"
 #import <WebKit/WebKit.h>
+#import "NSURL+CCExtensions.h"
 
 #pragma mark WINDOW
 
@@ -230,12 +231,10 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 
     if (shouldLoadURL) {
         NSURL* url = [NSURL URLWithString:self.inputLocation];
-        // scheme-less would suggest a relative file url
+        // scheme-less would suggest a file path
         if (![url scheme]) {
-            NSURL* baseDirectoryURL = [[context compositionURL] URLByDeletingLastPathComponent];
-//            NSString* cleanFilePath = [[[baseDirectoryURL path] stringByAppendingPathComponent:self.inputLocation] stringByStandardizingPath];
-//            CCDebugLog(@"cleaned file path: %@", cleanFilePath);
-            url = [baseDirectoryURL URLByAppendingPathComponent:self.inputLocation];
+            NSString* baseDirectory = [[[context compositionURL] URLByDeletingLastPathComponent] path];
+            url = [[NSURL alloc] initFileURLWithPossiblyRelativeString:self.inputLocation relativeTo:baseDirectory isDirectory:NO];
         }
 
         self.location = url;

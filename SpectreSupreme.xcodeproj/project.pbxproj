@@ -16,6 +16,7 @@
 		D864241613E12DC6002B9A65 /* Render SVG.qtz in Resources */ = {isa = PBXBuildFile; fileRef = D88C967013A7E92000C88D56 /* Render SVG.qtz */; };
 		D864241713E12DC8002B9A65 /* SVG-logo.svg in Resources */ = {isa = PBXBuildFile; fileRef = D8A94BBF13A95C670035EB75 /* SVG-logo.svg */; };
 		D864241813E12DCA002B9A65 /* Trajans-Column-lower-animated.svg in Resources */ = {isa = PBXBuildFile; fileRef = D8A94BC013A95C670035EB75 /* Trajans-Column-lower-animated.svg */; };
+		D8C9E4AD14FC64EF00CF6FFA /* NSURL+CCExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = D8C9E4AC14FC64EF00CF6FFA /* NSURL+CCExtensions.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,6 +39,8 @@
 		D88C967013A7E92000C88D56 /* Render SVG.qtz */ = {isa = PBXFileReference; lastKnownFileType = "video.quartz-composer"; path = "Render SVG.qtz"; sourceTree = SOURCE_ROOT; };
 		D8A94BBF13A95C670035EB75 /* SVG-logo.svg */ = {isa = PBXFileReference; lastKnownFileType = text; path = "SVG-logo.svg"; sourceTree = SOURCE_ROOT; };
 		D8A94BC013A95C670035EB75 /* Trajans-Column-lower-animated.svg */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Trajans-Column-lower-animated.svg"; sourceTree = SOURCE_ROOT; };
+		D8C9E4AB14FC64EF00CF6FFA /* NSURL+CCExtensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSURL+CCExtensions.h"; sourceTree = "<group>"; };
+		D8C9E4AC14FC64EF00CF6FFA /* NSURL+CCExtensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSURL+CCExtensions.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -94,6 +97,8 @@
 			isa = PBXGroup;
 			children = (
 				D815A72913A7169E0063686A /* SpectreSupreme.h */,
+				D8C9E4AB14FC64EF00CF6FFA /* NSURL+CCExtensions.h */,
+				D8C9E4AC14FC64EF00CF6FFA /* NSURL+CCExtensions.m */,
 				D815A70E13A70F270063686A /* SpectreSupremePlugin.h */,
 				D815A70F13A70F270063686A /* SpectreSupremePlugin.m */,
 				D815A70913A70F270063686A /* Supporting Files */,
@@ -218,6 +223,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D815A71013A70F270063686A /* SpectreSupremePlugin.m in Sources */,
+				D8C9E4AD14FC64EF00CF6FFA /* NSURL+CCExtensions.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
