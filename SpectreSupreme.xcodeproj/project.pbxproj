@@ -28,15 +28,15 @@
 		D815A70C13A70F270063686A /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		D815A70E13A70F270063686A /* SpectreSupremePlugin.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SpectreSupremePlugin.h; sourceTree = "<group>"; };
 		D815A70F13A70F270063686A /* SpectreSupremePlugin.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SpectreSupremePlugin.m; sourceTree = "<group>"; };
-		D815A71813A713440063686A /* Rakefile */ = {isa = PBXFileReference; lastKnownFileType = text; path = Rakefile; sourceTree = SOURCE_ROOT; };
-		D815A71913A713710063686A /* CHANGELOG */ = {isa = PBXFileReference; lastKnownFileType = text; path = CHANGELOG; sourceTree = SOURCE_ROOT; };
-		D815A71A13A713710063686A /* README.markdown */ = {isa = PBXFileReference; lastKnownFileType = text; path = README.markdown; sourceTree = SOURCE_ROOT; };
-		D815A71B13A713720063686A /* TODO */ = {isa = PBXFileReference; lastKnownFileType = text; path = TODO; sourceTree = SOURCE_ROOT; };
+		D815A71913A713710063686A /* CHANGELOG.md */ = {isa = PBXFileReference; lastKnownFileType = text; path = CHANGELOG.md; sourceTree = SOURCE_ROOT; };
+		D815A71A13A713710063686A /* README.md */ = {isa = PBXFileReference; lastKnownFileType = text; path = README.md; sourceTree = SOURCE_ROOT; };
+		D815A71B13A713720063686A /* TODO.md */ = {isa = PBXFileReference; lastKnownFileType = text; path = TODO.md; sourceTree = SOURCE_ROOT; };
 		D815A72113A715090063686A /* SpectreSupreme-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SpectreSupreme-Prefix.pch"; sourceTree = "<group>"; };
 		D815A72613A716750063686A /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		D815A72913A7169E0063686A /* SpectreSupreme.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpectreSupreme.h; sourceTree = "<group>"; };
 		D815A73813A7470E0063686A /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		D88C967013A7E92000C88D56 /* Render SVG.qtz */ = {isa = PBXFileReference; lastKnownFileType = "video.quartz-composer"; path = "Render SVG.qtz"; sourceTree = SOURCE_ROOT; };
+		D8A295A116D4033000A29E87 /* Jakefile.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = Jakefile.js; sourceTree = SOURCE_ROOT; };
 		D8A94BBF13A95C670035EB75 /* SVG-logo.svg */ = {isa = PBXFileReference; lastKnownFileType = text; path = "SVG-logo.svg"; sourceTree = SOURCE_ROOT; };
 		D8A94BC013A95C670035EB75 /* Trajans-Column-lower-animated.svg */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Trajans-Column-lower-animated.svg"; sourceTree = SOURCE_ROOT; };
 		D8C9E4AB14FC64EF00CF6FFA /* NSURL+CCExtensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSURL+CCExtensions.h"; sourceTree = "<group>"; };
@@ -102,10 +102,10 @@
 				D815A70E13A70F270063686A /* SpectreSupremePlugin.h */,
 				D815A70F13A70F270063686A /* SpectreSupremePlugin.m */,
 				D815A70913A70F270063686A /* Supporting Files */,
-				D815A71A13A713710063686A /* README.markdown */,
-				D815A71813A713440063686A /* Rakefile */,
-				D815A71B13A713720063686A /* TODO */,
-				D815A71913A713710063686A /* CHANGELOG */,
+				D815A71A13A713710063686A /* README.md */,
+				D815A71B13A713720063686A /* TODO.md */,
+				D815A71913A713710063686A /* CHANGELOG.md */,
+				D8A295A116D4033000A29E87 /* Jakefile.js */,
 				D88C967013A7E92000C88D56 /* Render SVG.qtz */,
 				D8A94BBF13A95C670035EB75 /* SVG-logo.svg */,
 				D8A94BC013A95C670035EB75 /* Trajans-Column-lower-animated.svg */,
@@ -134,7 +134,7 @@
 				D815A6F613A70F270063686A /* Sources */,
 				D815A6F713A70F270063686A /* Frameworks */,
 				D815A6F813A70F270063686A /* Resources */,
-				D815A71713A711EE0063686A /* Update Info.plist With git Info */,
+				D815A71713A711EE0063686A /* Update Bundle Version */,
 				D815A6F913A70F270063686A /* Copy Plug-In Into Place */,
 			);
 			buildRules = (
@@ -152,7 +152,7 @@
 		D815A6F113A70F270063686A /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0430;
+				LastUpgradeCheck = 0460;
 			};
 			buildConfigurationList = D815A6F413A70F270063686A /* Build configuration list for PBXProject "SpectreSupreme" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -201,19 +201,19 @@
 			shellPath = /bin/sh;
 			shellScript = "# This shell script simply copies the built plug-in to \"~/Library/Graphics/Quartz Composer Plug-Ins\" and overrides any previous version at that location\n\nmkdir -p \"$USER_LIBRARY_DIR/Graphics/Quartz Composer Plug-Ins\"\nrm -rf \"$USER_LIBRARY_DIR/Graphics/Quartz Composer Plug-Ins/SpectreSupreme.plugin\"\nditto \"$BUILT_PRODUCTS_DIR/SpectreSupreme.plugin\" \"$USER_LIBRARY_DIR/Graphics/Quartz Composer Plug-Ins/SpectreSupreme.plugin\"\n";
 		};
-		D815A71713A711EE0063686A /* Update Info.plist With git Info */ = {
+		D815A71713A711EE0063686A /* Update Bundle Version */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Update Info.plist With git Info";
+			name = "Update Bundle Version";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "/usr/local/bin/macrake update_bundle_version\n";
+			shellScript = "if [ -f /usr/local/bin/jake ]; then\n    PATH=$PATH:/usr/local/bin jake update\nelse\n    echo \"WARNING - could not find jake, bundle versions left unset\"\nfi";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -254,6 +254,10 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -269,6 +273,7 @@
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				ONLY_ACTIVE_ARCH = YES;
@@ -283,6 +288,10 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -292,6 +301,7 @@
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				RUN_CLANG_STATIC_ANALYZER = YES;
@@ -304,6 +314,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_ARC = YES;
+				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SpectreSupreme/SpectreSupreme-Prefix.pch";
 				INFOPLIST_FILE = "SpectreSupreme/SpectreSupreme-Info.plist";
@@ -317,6 +328,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_ARC = YES;
+				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SpectreSupreme/SpectreSupreme-Prefix.pch";
 				INFOPLIST_FILE = "SpectreSupreme/SpectreSupreme-Info.plist";
