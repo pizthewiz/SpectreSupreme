@@ -3,7 +3,7 @@
 //  SpectreSupreme
 //
 //  Created by Jean-Pierre Mouilleseaux on 13 Jun 2011.
-//  Copyright 2011-2012 Chorded Constructions. All rights reserved.
+//  Copyright 2011-2013 Chorded Constructions. All rights reserved.
 //
 
 #import "SpectreSupremePlugIn.h"
@@ -72,33 +72,38 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 }
 
 + (NSDictionary*)attributes {
-    return [NSDictionary dictionaryWithObjectsAndKeys: 
-        CCLocalizedString(@"kQCPlugIn_Name", NULL), QCPlugInAttributeNameKey, 
-        CCLocalizedString(@"kQCPlugIn_Description", NULL), QCPlugInAttributeDescriptionKey, 
-        [NSArray arrayWithObjects:@"Source", nil], QCPlugInAttributeCategoriesKey,
-        [NSArray arrayWithObjects:[[NSBundle bundleForClass:[self class]] URLForResource:SSExampleCompositionName withExtension:@"qtz"], nil], QCPlugInAttributeExamplesKey, 
-        nil];
+    return @{
+        QCPlugInAttributeNameKey: CCLocalizedString(@"kQCPlugIn_Name", NULL),
+        QCPlugInAttributeDescriptionKey: CCLocalizedString(@"kQCPlugIn_Description", NULL),
+        QCPlugInAttributeCategoriesKey: @[@"Source"],
+        QCPlugInAttributeExamplesKey: @[[[NSBundle bundleForClass:[self class]] URLForResource:SSExampleCompositionName withExtension:@"qtz"]]
+    };
 }
 
 + (NSDictionary*)attributesForPropertyPortWithKey:(NSString*)key {
-    if ([key isEqualToString:@"inputLocation"])
-        return [NSDictionary dictionaryWithObjectsAndKeys:@"Location", QCPortAttributeNameKey, nil];
-    else if ([key isEqualToString:@"inputDestinationWidth"])
-        return [NSDictionary dictionaryWithObjectsAndKeys:@"Width Pixels", QCPortAttributeNameKey, 
-            [NSNumber numberWithUnsignedInteger:0], QCPortAttributeMinimumValueKey, 
-            [NSNumber numberWithUnsignedInteger:10000], QCPortAttributeMaximumValueKey, 
-            [NSNumber numberWithUnsignedInteger:SSMainScreenWidth], QCPortAttributeDefaultValueKey, nil];
-    else if ([key isEqualToString:@"inputDestinationHeight"])
-        return [NSDictionary dictionaryWithObjectsAndKeys:@"Height Pixels", QCPortAttributeNameKey, 
-            [NSNumber numberWithUnsignedInteger:0], QCPortAttributeMinimumValueKey, 
-            [NSNumber numberWithUnsignedInteger:10000], QCPortAttributeMaximumValueKey, 
-            [NSNumber numberWithUnsignedInteger:SSMainScreenHeight], QCPortAttributeDefaultValueKey, nil];
-    else if ([key isEqualToString:@"inputRenderSignal"])
-        return [NSDictionary dictionaryWithObjectsAndKeys:@"Render Signal", QCPortAttributeNameKey, nil];
-    else if ([key isEqualToString:@"outputImage"])
-        return [NSDictionary dictionaryWithObjectsAndKeys:@"Image", QCPortAttributeNameKey, nil];
-    else if ([key isEqualToString:@"outputDoneSignal"])
-        return [NSDictionary dictionaryWithObjectsAndKeys:@"Done Signal", QCPortAttributeNameKey, nil];
+    if ([key isEqualToString:@"inputLocation"]) {
+        return @{QCPortAttributeNameKey: @"Location"};
+    } else if ([key isEqualToString:@"inputDestinationWidth"]) {
+        return @{
+            QCPortAttributeNameKey: @"Width Pixels",
+            QCPortAttributeMinimumValueKey: @0,
+            QCPortAttributeMaximumValueKey: @10000,
+            QCPortAttributeDefaultValueKey: @(SSMainScreenWidth)
+        };
+    } else if ([key isEqualToString:@"inputDestinationHeight"]) {
+        return @{
+            QCPortAttributeNameKey: @"Height Pixels",
+            QCPortAttributeMinimumValueKey: @0,
+            QCPortAttributeMaximumValueKey: @10000,
+            QCPortAttributeDefaultValueKey: @(SSMainScreenHeight)
+        };
+    } else if ([key isEqualToString:@"inputRenderSignal"]) {
+        return @{QCPortAttributeNameKey: @"Render Signal"};
+    } else if ([key isEqualToString:@"outputImage"]) {
+        return @{QCPortAttributeNameKey: @"Image"};
+    } else if ([key isEqualToString:@"outputDoneSignal"]) {
+        return @{QCPortAttributeNameKey: @"Done Signal"};
+    }
 	return nil;
 }
 
