@@ -48,7 +48,7 @@ static NSUInteger SSMainScreenWidth = 0;
 static NSUInteger SSMainScreenHeight = 0;
 
 static void _BufferReleaseCallback(const void* address, void* context) {
-    CCDebugLog(@"_BufferReleaseCallback");
+//    CCDebugLog(@"_BufferReleaseCallback");
     // release bitmap context backing
     free((void*)address);
 }
@@ -139,7 +139,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 	Return NO in case of fatal failure (this will prevent rendering of the composition to start).
 	*/
 
-    CCDebugLogSelector();
+//    CCDebugLogSelector();
 
     dispatch_async(dispatch_get_main_queue(), ^{
         [self _setupWindow];
@@ -222,7 +222,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
         }
         _destinationWidth = self.inputDestinationWidth;
         _destinationHeight = self.inputDestinationHeight;
-        CCDebugLog(@"resize content to %lux%lu", (unsigned long)_destinationWidth, (unsigned long)_destinationHeight);
+//        CCDebugLog(@"resize content to %lux%lu", (unsigned long)_destinationWidth, (unsigned long)_destinationHeight);
         dispatch_async(dispatch_get_main_queue(), ^{
             [_window setContentSize:NSMakeSize(_destinationWidth, _destinationHeight)];
         });
@@ -232,7 +232,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
         return YES;
     }
 
-    CCDebugLogSelector();
+//    CCDebugLogSelector();
 
     if (shouldLoadURL) {
         NSURL* url = [NSURL URLWithString:self.inputLocation];
@@ -243,7 +243,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
         }
 
         self.location = url;
-        CCDebugLog(@"will fetch: %@", url);
+//        CCDebugLog(@"will fetch: %@", url);
         dispatch_async(dispatch_get_main_queue(), ^{
             [_window setContentSize:NSMakeSize(_destinationWidth, _destinationHeight)];
             [[_webView mainFrame] loadRequest:[NSURLRequest requestWithURL:url]];
@@ -271,7 +271,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 	Called by Quartz Composer when rendering of the composition stops: perform any required cleanup for the plug-in.
 	*/
 
-    CCDebugLogSelector();
+//    CCDebugLogSelector();
 
     CGImageRelease(_renderedImage);
     _renderedImage = NULL;
@@ -281,10 +281,11 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 #pragma mark - FRAME LOAD DELEGATE
 
 - (void)webView:(WebView*)sender didFinishLoadForFrame:(WebFrame*)frame {
-    CCDebugLogSelector();
+//    CCDebugLogSelector();
 
-    if (frame != [sender mainFrame])
+    if (frame != [sender mainFrame]) {
         return;
+    }
 //    NSView* documentView = [[[sender mainFrame] frameView ] documentView];
 //    CCDebugLog(@"main frame: (%fx%f)", NSWidth(documentView.bounds), NSHeight(documentView.bounds));
 
@@ -294,13 +295,13 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 }
 
 - (void)webView:(WebView*)sender didFailProvisionalLoadWithError:(NSError*)error forFrame:(WebFrame*)frame {
-    CCDebugLogSelector();
-    CCDebugLog(@"ERROR - failed provisional load with %@", error);
+//    CCDebugLogSelector();
+    CCErrorLog(@"ERROR - failed provisional load with %@", error);
 }
 
 - (void)webView:(WebView*)sender didFailLoadWithError:(NSError*)error forFrame:(WebFrame*)frame {
-    CCDebugLogSelector();
-    CCDebugLog(@"ERROR - failed load with %@", error);
+//    CCDebugLogSelector();
+    CCErrorLog(@"ERROR - failed load with %@", error);
 }
 
 #pragma mark - PRIVATE
@@ -313,7 +314,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 }
 
 - (void)_teardownWindow {
-    CCDebugLogSelector();
+//    CCDebugLogSelector();
 
     [_window setContentView:nil];
     _webView = nil;
@@ -323,7 +324,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 }
 
 - (void)_captureImageFromWebView {
-    CCDebugLogSelector();
+//    CCDebugLogSelector();
 
     // size to fit
     NSView* documentView = [[[_webView mainFrame] frameView] documentView];
