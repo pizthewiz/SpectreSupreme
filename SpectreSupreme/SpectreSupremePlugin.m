@@ -20,10 +20,6 @@
 - (BOOL)isOpaque {
     return NO;
 }
-
-- (NSColor*)backgroundColor {
-    return [NSColor clearColor];
-}
 @end
 
 #pragma mark - WEBVIEW
@@ -35,7 +31,6 @@
 - (BOOL)isOpaque {
     return NO;
 }
-
 - (BOOL)drawsBackground {
     return NO;
 }
@@ -56,9 +51,6 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 @interface SpectreSupremePlugIn()
 @property (nonatomic, strong) id <QCPlugInOutputImageProvider> placeHolderProvider;
 @property (nonatomic, strong) NSURL* location;
-- (void)_setupWindow;
-- (void)_teardownWindow;
-- (void)_captureImageFromWebView;
 @end
 
 @implementation SpectreSupremePlugIn
@@ -127,6 +119,8 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 }
 
 - (void)dealloc {
+    CCDebugLogSelector();
+
     [self _teardownWindow];
     CGImageRelease(_renderedImage);
 }
@@ -134,13 +128,6 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 #pragma mark - EXECUTION
 
 - (BOOL)startExecution:(id <QCPlugInContext>)context {
-	/*
-	Called by Quartz Composer when rendering of the composition starts: perform any required setup for the plug-in.
-	Return NO in case of fatal failure (this will prevent rendering of the composition to start).
-	*/
-
-//    CCDebugLogSelector();
-
     dispatch_async(dispatch_get_main_queue(), ^{
         [self _setupWindow];
     });
@@ -148,22 +135,9 @@ static void _BufferReleaseCallback(const void* address, void* context) {
     return YES;
 }
 
-- (void)enableExecution:(id <QCPlugInContext>)context {
-	/*
-	Called by Quartz Composer when the plug-in instance starts being used by Quartz Composer.
-	*/
-}
+- (void)enableExecution:(id <QCPlugInContext>)context {}
 
 - (BOOL)execute:(id <QCPlugInContext>)context atTime:(NSTimeInterval)time withArguments:(NSDictionary*)arguments {
-	/*
-	Called by Quartz Composer whenever the plug-in instance needs to execute.
-	Only read from the plug-in inputs and produce a result (by writing to the plug-in outputs or rendering to the destination OpenGL context) within that method and nowhere else.
-	Return NO in case of failure during the execution (this will prevent rendering of the current frame to complete).
-
-	The OpenGL context for rendering can be accessed and defined for CGL macros using:
-	CGLContextObj cgl_ctx = [context CGLContextObj];
-	*/
-
     // update outputs when appropriate
     if (_doneSignalDidChange) {
         // set image on done
@@ -171,8 +145,9 @@ static void _BufferReleaseCallback(const void* address, void* context) {
             // TODO - move this somewhere convenient
             size_t renderedImageWidth = CGImageGetWidth(_renderedImage);
             size_t bytesPerRow = renderedImageWidth * 4;
-            if (bytesPerRow % 16)
+            if (bytesPerRow % 16) {
                 bytesPerRow = ((bytesPerRow / 16) + 1) * 16;
+            }
 
             size_t renderedImageHeight = CGImageGetHeight(_renderedImage);
             double totalBytes = renderedImageHeight * bytesPerRow;
@@ -188,7 +163,7 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 
             CGContextRef bitmapContext = CGBitmapContextCreate(baseAddress, renderedImageWidth, renderedImageHeight, 8, bytesPerRow, [context colorSpace], kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrder32Host);
             if (bitmapContext == NULL) {
-                CCErrorLog(@"ERROR - failed to create bitmap context");
+                CCErrorLog(@"ERROR - failed to create bitmap context (%lux%lu)", renderedImageWidth, renderedImageHeight);
                 free(baseAddress);
                 CGImageRelease(_renderedImage);
                 _renderedImage = NULL;
@@ -260,19 +235,9 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 	return YES;
 }
 
-- (void)disableExecution:(id <QCPlugInContext>)context {
-	/*
-	Called by Quartz Composer when the plug-in instance stops being used by Quartz Composer.
-	*/
-}
+- (void)disableExecution:(id <QCPlugInContext>)context {}
 
 - (void)stopExecution:(id <QCPlugInContext>)context {
-	/*
-	Called by Quartz Composer when rendering of the composition stops: perform any required cleanup for the plug-in.
-	*/
-
-//    CCDebugLogSelector();
-
     CGImageRelease(_renderedImage);
     _renderedImage = NULL;
     self.placeHolderProvider = nil;
@@ -281,8 +246,6 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 #pragma mark - FRAME LOAD DELEGATE
 
 - (void)webView:(WebView*)sender didFinishLoadForFrame:(WebFrame*)frame {
-//    CCDebugLogSelector();
-
     if (frame != [sender mainFrame]) {
         return;
     }
@@ -295,12 +258,10 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 }
 
 - (void)webView:(WebView*)sender didFailProvisionalLoadWithError:(NSError*)error forFrame:(WebFrame*)frame {
-//    CCDebugLogSelector();
     CCErrorLog(@"ERROR - failed provisional load with %@", error);
 }
 
 - (void)webView:(WebView*)sender didFailLoadWithError:(NSError*)error forFrame:(WebFrame*)frame {
-//    CCDebugLogSelector();
     CCErrorLog(@"ERROR - failed load with %@", error);
 }
 
@@ -314,8 +275,6 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 }
 
 - (void)_teardownWindow {
-//    CCDebugLogSelector();
-
     [_window setContentView:nil];
     _webView = nil;
 
@@ -324,11 +283,10 @@ static void _BufferReleaseCallback(const void* address, void* context) {
 }
 
 - (void)_captureImageFromWebView {
-//    CCDebugLogSelector();
-
     // size to fit
     NSView* documentView = [[[_webView mainFrame] frameView] documentView];
     NSSize documentSize = [documentView bounds].size;
+    // NB - possible for documentSize to be NSZeroSize
     BOOL shouldResize = !NSEqualSizes([(NSView*)[_window contentView] bounds].size, documentSize);
     if (shouldResize) {
         [_window setContentSize:[documentView bounds].size];
